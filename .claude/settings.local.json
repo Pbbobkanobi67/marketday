@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "WebSearch",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --no-import-alias --turbopack 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx create-next-app@latest market-day-reserve --typescript --tailwind --eslint --app --src-dir --no-import-alias --turbopack 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && echo \"y\" | npx create-next-app@latest market-day-reserve --typescript --tailwind --eslint --app --src-dir --no-import-alias --turbopack 2>&1)",
+      "Bash(cd:*)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npm run build 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx next dev --port 3000 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx create-next-app@14 . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-git --use-npm 2>&1)",
+      "Bash(cp:*)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npm install next-auth@^4.24.7 @prisma/client prisma resend @vercel/blob bcryptjs zod react-hook-form @hookform/resolvers date-fns sonner lucide-react class-variance-authority clsx tailwind-merge tailwindcss-animate @radix-ui/react-dialog @radix-ui/react-select @radix-ui/react-dropdown-menu @radix-ui/react-label @radix-ui/react-separator @radix-ui/react-slot @radix-ui/react-avatar @radix-ui/react-checkbox @radix-ui/react-popover @radix-ui/react-toast @radix-ui/react-tabs 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npm install -D @types/bcryptjs @types/node tsx 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx prisma init 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx shadcn@latest init --defaults 2>&1)"
+    ]
+  }
+}
