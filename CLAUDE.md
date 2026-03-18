@@ -1,67 +1,94 @@
-# Market Day Reserve
+# MarketDay
 
-Farm stand reservation app for Hollow Creek Farm Stand (Millbrook, NY). Customers browse products, add to cart, and reserve items for pickup on market days (Saturdays and Wednesdays).
+White-label farmers market online ordering platform. Shoppers browse vendors/products, pick a market date, and either pay online (Stripe — stubbed) or reserve for pay-at-market pickup. Two admin users manage everything.
+
+**Demo identity:** Liberty Station Public Market, San Diego, CA
 
 ## Tech Stack
 
-- **Framework**: Next.js 16 (App Router) with React 19
-- **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS v4 (via `@tailwindcss/postcss`)
-- **Fonts**: Inter (body) + Fraunces (headings) via `next/font/google`
-- **Compiler**: React Compiler enabled (`reactCompiler: true` in next.config.ts)
+- **Framework**: Next.js 14.2.x (App Router)
+- **Language**: TypeScript 5.x (strict mode)
+- **Styling**: Tailwind CSS 3.4.x + shadcn/ui
+- **Database**: SQLite via Prisma 7.x + better-sqlite3 adapter
+- **Auth**: NextAuth v4 (credentials provider, JWT sessions)
+- **Payments**: Stripe — STUBBED (mock functions, no real API calls)
+- **Email**: Resend — null-safe (silently skipped without API key)
+- **Fonts**: Playfair Display (headings) + DM Sans (body) + DM Mono
 - **Package manager**: npm
 
 ## Project Structure
 
 ```
 src/
-  app/                    # Next.js App Router pages
-    page.tsx              # Home — Hero, FeaturedProducts, SeasonalCallout, MarketInfo
-    shop/page.tsx         # Product listing with category filter
-    shop/[slug]/          # Product detail (page.tsx + ProductDetail.tsx)
-    cart/page.tsx         # Cart review
-    reserve/page.tsx      # Reservation form + confirmation
-  components/             # UI components grouped by feature
-    home/                 # Hero, FeaturedProducts, SeasonalCallout, MarketInfo
-    shop/                 # ProductCard, ProductGrid, CategoryFilter
-    cart/                 # CartItem, CartSummary, EmptyCart
-    reserve/              # ReservationForm, Confirmation
+  app/
+    (shop)/               # Public shop pages (layout with Header/Footer/CartDrawer)
+      page.tsx             # Homepage — hero, how-it-works, vendors, markets
+      market/[id]/         # Market shop page with category filters
+      vendors/             # Vendor list + detail pages
+      cart/                # Cart page with market/payment selection
+      checkout/            # Checkout form (react-hook-form + zod)
+      order/[id]/          # Order confirmation
+    admin/                 # Protected admin area
+      login/               # Admin login (NextAuth credentials)
+      dashboard/           # Stats, next market, recent orders
+      orders/              # Order list + detail with status updates
+      vendors/             # Vendor CRUD (list, new, edit)
+      products/            # Product CRUD
+      markets/             # Market CRUD
+    api/
+      auth/[...nextauth]/  # NextAuth handler
+      orders/reserve/      # AT_MARKET order creation
+      stripe/checkout/     # STUBBED Stripe checkout
+      stripe/webhook/      # STUBBED webhook placeholder
+      admin/orders/[id]/status/ # Order status PATCH
+  components/
     layout/               # Header, Footer
-  context/CartContext.tsx  # Cart state (useReducer + localStorage persistence)
-  data/                   # Static data (products.ts, market.ts)
-  lib/                    # Utilities (formatPrice, cn) and constants
-  types/index.ts          # Shared TypeScript interfaces
+    shop/                 # ProductCard, CartDrawer, VendorCard
+    admin/                # AdminNav, StatCard, OrderStatusBadge, OrderStatusUpdater
+    ui/                   # shadcn/ui primitives
+  config/market.config.ts # White-label config (all branding in one file)
+  context/CartContext.tsx  # Cart state (localStorage persistence)
+  generated/prisma/       # Prisma generated client (gitignored)
+  lib/                    # prisma.ts, auth.ts, utils.ts, stripe.ts (stub), resend.ts
+  types/index.ts          # NextAuth augmentation + Cart/Checkout types
+prisma/
+  schema.prisma           # SQLite schema (6 models)
+  seed.ts                 # Seed data (2 admins, 3 markets, 8 vendors, 24 products, 5 orders)
+  dev.db                  # SQLite database (gitignored)
 ```
 
 ## Key Patterns
 
-- **No backend/database** — all data is static in `src/data/`. Cart persists via localStorage.
+- **Database**: SQLite via Prisma 7 with `@prisma/adapter-better-sqlite3`. Config in `prisma.config.ts`.
+- **Prisma client import**: `import { PrismaClient } from '@/generated/prisma/client'` (or use `prisma` from `@/lib/prisma`)
+- **Enums as strings**: SQLite doesn't support enums — all status/type fields are plain strings
 - **Path alias**: `@/*` maps to `./src/*`
-- **Cart state**: React Context + `useReducer` in `CartContext.tsx`. Use the `useCart()` hook.
-- **Styling**: Utility-first Tailwind classes. Custom `cn()` helper for conditional classes.
-- **Components are client or server** — only `CartContext.tsx` and components using `useCart()` need `"use client"`.
-- **Product colors**: Each product has a `color` field (Tailwind bg class) used as a visual placeholder instead of images.
+- **Cart state**: React Context + `useState` in `CartContext.tsx`. Use the `useCart()` hook.
+- **White-label**: All branding lives in `src/config/market.config.ts`
+- **Stripe stubbed**: `src/lib/stripe.ts` exports mock functions that simulate checkout
+- **Server actions**: Admin CRUD uses Next.js server actions in `actions.ts` files
 
 ## Commands
 
 ```bash
-npm run dev     # Start dev server (http://localhost:3000)
-npm run build   # Production build
-npm run start   # Start production server
-npm run lint    # ESLint
+npm run dev              # Start dev server (http://localhost:3000)
+npm run build            # Production build
+npm run start            # Start production server
+npm run lint             # ESLint
+npx prisma generate      # Regenerate Prisma client
+npx prisma db push       # Push schema changes to SQLite
+npx prisma db seed       # Seed database
 ```
 
-## Types
+## Admin Credentials
 
-- `Product` — id, slug, name, price, unit, category, description, longDescription, color, featured, inSeason
-- `Category` — union of "Produce" | "Eggs & Dairy" | "Honey & Preserves" | "Baked Goods" | "Seasonal Specials"
-- `CartItem` — { product, quantity }
-- `ReservationData` — name, email, phone, pickupDate, items, total
-- `MarketInfo` — farm stand metadata
+- `marci@marketday.com` / `marci2026`
+- `jessica@marketday.com` / `jessica2026`
 
 ## Conventions
 
-- Use existing Tailwind classes; do not introduce CSS modules or styled-components
+- Use Tailwind utility classes; shadcn/ui for form elements and data display
 - Keep components in their feature folder under `src/components/`
-- Add new product categories to the `Category` type in `src/types/index.ts` and the `categories` array in `src/lib/constants.ts`
-- Pickup dates are Saturdays and Wednesdays only (generated dynamically in `getPickupDates()`)
+- Categories defined in `MARKET_CONFIG.categories` — update there for new categories
+- Prices stored as integers (cents) in database, formatted via `formatPrice()`
+- All market-specific copy/config in `market.config.ts` for white-label rebranding
