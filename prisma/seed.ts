@@ -33,6 +33,15 @@ async function main() {
 
   await prisma.adminUser.create({
     data: {
+      name: 'Bob',
+      email: 'bob.smic@gmail.com',
+      hashedPassword: await bcrypt.hash('Expert09$', 12),
+      role: 'admin',
+    },
+  })
+
+  await prisma.adminUser.create({
+    data: {
       name: 'Jessica',
       email: 'jessica@backroadsmarket.com',
       hashedPassword: await bcrypt.hash('jessica2026', 12),
