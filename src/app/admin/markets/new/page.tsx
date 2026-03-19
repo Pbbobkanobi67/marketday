@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { useTransition } from 'react'
 import Link from 'next/link'
 import { MARKET_CONFIG } from '@/config/market.config'
@@ -37,7 +37,7 @@ export default function NewMarketPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<MarketFormValues>({
-    resolver: zodResolver(marketSchema),
+    resolver: standardSchemaResolver(marketSchema),
     defaultValues: {
       name: '',
       date: '',

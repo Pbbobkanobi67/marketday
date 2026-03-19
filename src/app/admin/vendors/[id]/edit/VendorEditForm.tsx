@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { useTransition } from 'react'
 import Link from 'next/link'
 import { generateSlug } from '@/lib/utils'
@@ -47,7 +47,7 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
     watch,
     formState: { errors },
   } = useForm<VendorFormValues>({
-    resolver: zodResolver(vendorSchema),
+    resolver: standardSchemaResolver(vendorSchema),
     defaultValues: {
       name: vendor.name,
       slug: vendor.slug,

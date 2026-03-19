@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { z } from 'zod'
 import { Loader2, ArrowRight, ArrowLeft, CreditCard, Coins } from 'lucide-react'
 import { toast } from 'sonner'
@@ -49,7 +49,7 @@ export default function CheckoutClient({ markets }: { markets: SerializedMarket[
     handleSubmit,
     formState: { errors },
   } = useForm<CheckoutFormValues>({
-    resolver: zodResolver(checkoutSchema),
+    resolver: standardSchemaResolver(checkoutSchema),
     defaultValues: {
       customerName: '',
       customerEmail: '',

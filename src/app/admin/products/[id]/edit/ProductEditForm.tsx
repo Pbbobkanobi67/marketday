@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { useTransition } from 'react'
 import Link from 'next/link'
 import { generateSlug } from '@/lib/utils'
@@ -62,7 +62,7 @@ export function ProductEditForm({ product, vendors }: ProductEditFormProps) {
     watch,
     formState: { errors },
   } = useForm<ProductFormValues>({
-    resolver: zodResolver(productSchema),
+    resolver: standardSchemaResolver(productSchema),
     defaultValues: {
       name: product.name,
       slug: product.slug,
