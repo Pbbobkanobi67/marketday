@@ -89,14 +89,10 @@ export default async function HomePage() {
 
             {/* Right column — category cards (desktop) */}
             <div className="hidden lg:grid grid-cols-2 gap-4">
-              {topCategories.map((cat) => {
-                const href = nextMarket
-                  ? `/market/${nextMarket.id}?category=${cat.value}`
-                  : '/vendors'
-                return (
+              {topCategories.map((cat) => (
                   <Link
                     key={cat.value}
-                    href={href}
+                    href={`/vendors?category=${cat.value}`}
                     className="card-market p-6 flex flex-col items-center justify-center gap-3 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
                   >
                     <span className="text-4xl" role="img" aria-label={cat.label}>
@@ -106,8 +102,7 @@ export default async function HomePage() {
                       {cat.label}
                     </span>
                   </Link>
-                )
-              })}
+              ))}
             </div>
           </div>
         </div>
