@@ -42,7 +42,32 @@
       "Bash(cd \"D:/Apps/Market Day Reserve\" && git push origin master 2>&1)",
       "Bash(cd \"D:/Apps/Market Day Reserve\" && git add src/app/admin/page.tsx && git commit -m \"$\\(cat <<'EOF'\nAdd /admin redirect to /admin/dashboard\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)",
       "Bash(tail:*)",
-      "Bash(cd \"D:/Apps/Market Day Reserve\" && git add -A && git commit -m \"$\\(cat <<'EOF'\nFix admin redirect loop by separating login from protected layout\n\nMove all authenticated admin pages into \\(protected\\) route group with\nauth-checking layout + AdminNav. Login page stays at top level with a\npass-through layout, breaking the infinite redirect cycle.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)"
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && git add -A && git commit -m \"$\\(cat <<'EOF'\nFix admin redirect loop by separating login from protected layout\n\nMove all authenticated admin pages into \\(protected\\) route group with\nauth-checking layout + AdminNav. Login page stays at top level with a\npass-through layout, breaking the infinite redirect cycle.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && git add prisma/seed.ts src/app/api/setup-admin/route.ts && git commit -m \"$\\(cat <<'EOF'\nAdd Bob admin account and setup endpoint\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)",
+      "Bash(curl:*)",
+      "WebFetch(domain:marketday-theta.vercel.app)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx vercel env ls 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && echo \"$\\(openssl rand -base64 32\\)\" | npx vercel env add NEXTAUTH_SECRET production 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && echo \"https://marketday-theta.vercel.app\" | npx vercel env add NEXTAUTH_URL production 2>&1)",
+      "Bash(turso:*)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npm ls @prisma/adapter-better-sqlite3 @libsql/client @prisma/adapter-libsql 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npm ls prisma @prisma/client 2>&1)",
+      "Bash(curl -sSfL https://get.tur.so/install.sh | bash 2>&1)",
+      "Bash(npx turso:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx vercel stores ls 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx vercel integration ls 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npx vercel integration add neon 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && echo \"Y\" | npx vercel integration add neon 2>&1)",
+      "WebFetch(domain:github.com)",
+      "Bash(\"$HOME/bin/tursodb.exe\":*)",
+      "Bash(\"$HOME/bin/tursodb.exe\" help:*)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && npm ls @prisma/adapter-neon @neondatabase/serverless 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && DATABASE_URL=\"postgresql://neondb_owner:npg_NR9MaGlC2OLy@ep-wild-bread-adr9p9un-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require\" npx tsx prisma/seed.ts 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && DATABASE_URL=\"postgresql://neondb_owner:npg_NR9MaGlC2OLy@ep-wild-bread-adr9p9un-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require\" node -e \"\nconst { Pool } = require\\('@neondatabase/serverless'\\);\nconsole.log\\('URL exists:', !!process.env.DATABASE_URL\\);\nconsole.log\\('URL starts with:', process.env.DATABASE_URL?.substring\\(0, 30\\)\\);\nconst pool = new Pool\\({ connectionString: process.env.DATABASE_URL }\\);\nconsole.log\\('Pool created'\\);\npool.query\\('SELECT 1 as test'\\).then\\(r => { console.log\\('OK:', r.rows\\); pool.end\\(\\); }\\).catch\\(e => console.error\\('Query error:', e.message\\)\\);\n\" 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && DATABASE_URL=\"postgresql://neondb_owner:npg_NR9MaGlC2OLy@ep-wild-bread-adr9p9un-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require\" node -e \"\n// Simulate what seed.ts does\nconst dotenv = require\\('dotenv'\\);\nconst path = require\\('path'\\);\nconsole.log\\('BEFORE dotenv:', process.env.DATABASE_URL?.substring\\(0, 40\\)\\);\ndotenv.config\\({ path: path.join\\(__dirname, 'prisma', '..', '.env'\\) }\\);\nconsole.log\\('AFTER dotenv:', process.env.DATABASE_URL?.substring\\(0, 40\\)\\);\n\" 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && echo \"postgresql://neondb_owner:npg_NR9MaGlC2OLy@ep-wild-bread-adr9p9un-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require\" | npx vercel env add DATABASE_URL production 2>&1)",
+      "Bash(cd \"D:/Apps/Market Day Reserve\" && git add -A && git commit -m \"$\\(cat <<'EOF'\nSwitch from SQLite to Neon PostgreSQL for production\n\n- Replace @prisma/adapter-better-sqlite3 with @prisma/adapter-neon\n- Update schema provider to postgresql\n- Update prisma.config.ts to use DATABASE_URL env var\n- Update lib/prisma.ts and seed.ts for Neon adapter\n- Remove temporary setup-admin endpoint\n- Database seeded on Neon with all Backroads data\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)"
     ]
   }
 }

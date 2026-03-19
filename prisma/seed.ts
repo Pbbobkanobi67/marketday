@@ -1,11 +1,12 @@
-import { PrismaClient } from '../src/generated/prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
-import bcrypt from 'bcryptjs'
+import dotenv from 'dotenv'
 import path from 'node:path'
+dotenv.config({ path: path.join(__dirname, '..', '.env') })
 
-const adapter = new PrismaBetterSqlite3({
-  url: `file:${path.join(__dirname, 'dev.db')}`,
-})
+import { PrismaClient } from '../src/generated/prisma/client'
+import { PrismaNeon } from '@prisma/adapter-neon'
+import bcrypt from 'bcryptjs'
+
+const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
