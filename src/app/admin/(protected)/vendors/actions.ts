@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import bcrypt from 'bcryptjs'
+import { logVendorChange } from '@/lib/changelog'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 
 export async function createVendor(formData: {
   name: string
@@ -95,6 +98,11 @@ export async function updateVendor(
   }
 
   await prisma.vendor.update({ where: { id }, data })
+
+  const session = await getServerSession(authOptions)
+  const adminName = session?.user?.name || 'admin'
+  await logVendorChange(id, 'ADMIN_EDIT', adminName, `Admin updated vendor "${rest.name}"`)
+
   revalidatePath('/admin/vendors')
   redirect('/admin/vendors')
 }
@@ -104,5 +112,10 @@ export async function clearVendorReview(vendorId: string) {
     where: { id: vendorId },
     data: { needsReview: false },
   })
+
+  const session = await getServerSession(authOptions)
+  const adminName = session?.user?.name || 'admin'
+  await logVendorChange(vendorId, 'REVIEW_CLEARED', adminName, 'Cleared review flag')
+
   revalidatePath('/admin/vendors')
 }

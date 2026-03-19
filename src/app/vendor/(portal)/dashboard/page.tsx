@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { formatMarketDate } from '@/lib/utils'
-import { Package, Calendar, ExternalLink, ArrowRight } from 'lucide-react'
+import { Package, Calendar, ExternalLink, ArrowRight, Shield } from 'lucide-react'
 import StatCard from '@/components/admin/StatCard'
 
 export default async function VendorDashboardPage() {
@@ -52,6 +52,20 @@ export default async function VendorDashboardPage() {
           subtitle="Assigned to attend"
           icon={<Calendar className="size-5" />}
         />
+      </div>
+
+      <div className="card-market p-5">
+        <div className="flex items-start gap-3">
+          <div className="rounded-lg bg-green-50 p-2">
+            <Shield className="size-5 text-green-600" />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-market-soil">Account Status: Free</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Your vendor portal is currently free. A small admin fee may apply in the future.
+            </p>
+          </div>
+        </div>
       </div>
 
       {vendor.markets.length > 0 && (

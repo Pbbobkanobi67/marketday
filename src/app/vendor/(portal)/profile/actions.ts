@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import bcrypt from 'bcryptjs'
+import { logVendorChange } from '@/lib/changelog'
 
 export async function updateVendorProfile(formData: {
   name: string
@@ -22,6 +23,11 @@ export async function updateVendorProfile(formData: {
     throw new Error('Unauthorized')
   }
 
+  const vendor = await prisma.vendor.findUnique({
+    where: { id: session.user.vendorId },
+    select: { name: true, description: true, contactPerson: true, email: true, phone: true, website: true, instagramHandle: true, facebookHandle: true, businessDescription: true },
+  })
+
   await prisma.vendor.update({
     where: { id: session.user.vendorId },
     data: {
@@ -37,6 +43,21 @@ export async function updateVendorProfile(formData: {
       needsReview: true,
     },
   })
+
+  const changed: string[] = []
+  if (vendor) {
+    if (vendor.name !== formData.name) changed.push('name')
+    if (vendor.description !== formData.description) changed.push('description')
+    if ((vendor.contactPerson || '') !== (formData.contactPerson || '')) changed.push('contactPerson')
+    if ((vendor.email || '') !== (formData.email || '')) changed.push('email')
+    if ((vendor.phone || '') !== (formData.phone || '')) changed.push('phone')
+    if ((vendor.website || '') !== (formData.website || '')) changed.push('website')
+    if ((vendor.instagramHandle || '') !== (formData.instagramHandle || '')) changed.push('instagram')
+    if ((vendor.facebookHandle || '') !== (formData.facebookHandle || '')) changed.push('facebook')
+    if ((vendor.businessDescription || '') !== (formData.businessDescription || '')) changed.push('businessDescription')
+  }
+  const summary = changed.length > 0 ? `Updated ${changed.join(', ')}` : 'Profile saved (no changes)'
+  await logVendorChange(session.user.vendorId, 'PROFILE_UPDATE', 'vendor', summary)
 
   revalidatePath('/vendor/profile')
   revalidatePath(`/vendors`)
@@ -71,6 +92,8 @@ export async function changeVendorPassword(formData: {
     where: { id: session.user.vendorId },
     data: { hashedPassword },
   })
+
+  await logVendorChange(session.user.vendorId, 'PASSWORD_CHANGE', 'vendor', 'Changed portal password')
 
   return { success: true }
 }

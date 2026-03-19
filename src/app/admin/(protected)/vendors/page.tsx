@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { categoryLabel, categoryColor, vendorTypeLabel, vendorTypeColor, cn } from '@/lib/utils'
-import { Plus, Pencil, ExternalLink, AlertCircle } from 'lucide-react'
+import { Plus, Pencil, ExternalLink, AlertCircle, History } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -28,10 +28,16 @@ export default async function AdminVendorsPage() {
             Manage your market vendors and their profiles.
           </p>
         </div>
-        <Button render={<Link href="/admin/vendors/new" />}>
-          <Plus className="mr-1.5 h-4 w-4" />
-          Add Vendor
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" render={<Link href="/admin/vendors/changelog" />}>
+            <History className="mr-1.5 h-4 w-4" />
+            Changelog
+          </Button>
+          <Button render={<Link href="/admin/vendors/new" />}>
+            <Plus className="mr-1.5 h-4 w-4" />
+            Add Vendor
+          </Button>
+        </div>
       </div>
 
       <Separator />

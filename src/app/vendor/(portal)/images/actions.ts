@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { logVendorChange } from '@/lib/changelog'
 
 export async function updateVendorImages(formData: {
   logoUrl: string | null
@@ -28,6 +29,8 @@ export async function updateVendorImages(formData: {
       needsReview: true,
     },
   })
+
+  await logVendorChange(session.user.vendorId, 'IMAGE_UPDATE', 'vendor', 'Updated images')
 
   revalidatePath('/vendor/images')
   revalidatePath('/vendors')
