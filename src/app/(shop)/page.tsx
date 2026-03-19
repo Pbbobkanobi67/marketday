@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { CalendarDays, MapPin, Clock, ArrowRight, Star } from 'lucide-react'
+import { CalendarDays, CalendarPlus, MapPin, Clock, ArrowRight, Star } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { MARKET_CONFIG } from '@/config/market.config'
 import { formatMarketDate, formatMarketDateShort, formatMarketDateTime } from '@/lib/utils'
@@ -288,13 +288,23 @@ export default async function HomePage() {
                     </div>
                   </div>
 
-                  <Link
-                    href={`/market/${market.id}`}
-                    className="text-sm font-medium text-market-sage hover:text-market-sage-dk transition-colors mt-auto inline-flex items-center gap-1"
-                  >
-                    Shop This Market
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  <div className="flex items-center justify-between mt-auto">
+                    <Link
+                      href={`/market/${market.id}`}
+                      className="text-sm font-medium text-market-sage hover:text-market-sage-dk transition-colors inline-flex items-center gap-1"
+                    >
+                      Shop This Market
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    <a
+                      href={`/api/calendar/${market.id}`}
+                      download
+                      className="text-xs font-medium text-muted-foreground hover:text-market-sage transition-colors inline-flex items-center gap-1"
+                    >
+                      <CalendarPlus className="w-3.5 h-3.5" />
+                      Add to Calendar
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>
