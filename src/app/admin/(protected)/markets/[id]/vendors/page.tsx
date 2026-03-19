@@ -15,7 +15,6 @@ export default async function MarketVendorsPage({
     include: {
       vendors: {
         include: { vendor: true },
-        orderBy: { vendor: { name: 'asc' } },
       },
     },
   })
@@ -26,6 +25,9 @@ export default async function MarketVendorsPage({
     where: { isActive: true },
     orderBy: { name: 'asc' },
   })
+
+  // Sort in JS since nested relation orderBy can fail with Neon adapter
+  market.vendors.sort((a, b) => a.vendor.name.localeCompare(b.vendor.name))
 
   const assignedVendorIds = new Set(market.vendors.map((mv) => mv.vendorId))
   const unassignedVendors = allVendors.filter((v) => !assignedVendorIds.has(v.id))

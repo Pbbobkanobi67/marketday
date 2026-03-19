@@ -41,13 +41,14 @@ type ProductWithVendor = {
 type MarketShopClientProps = {
   market: MarketData
   products: ProductWithVendor[]
+  initialCategory?: string
 }
 
 const ALL_CATEGORY = 'all' as const
 
-export default function MarketShopClient({ market, products }: MarketShopClientProps) {
+export default function MarketShopClient({ market, products, initialCategory }: MarketShopClientProps) {
   const { itemCount, subtotal, openDrawer } = useCart()
-  const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORY)
+  const [activeCategory, setActiveCategory] = useState<string>(initialCategory || ALL_CATEGORY)
 
   const categories = useMemo(
     () => [

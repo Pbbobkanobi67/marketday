@@ -23,7 +23,10 @@ function getInitials(name: string): string {
 
 export default function VendorCard({ vendor }: VendorCardProps) {
   return (
-    <div className="card-market p-5 flex flex-col gap-3 transition-all duration-200 hover:shadow-md">
+    <Link
+      href={`/vendors/${vendor.slug}`}
+      className="card-market p-5 flex flex-col gap-3 transition-all duration-200 group hover:shadow-lg hover:-translate-y-0.5"
+    >
       <div className="flex items-start gap-4">
         {/* Logo circle */}
         <div className="w-14 h-14 rounded-full bg-market-sage/15 flex items-center justify-center shrink-0 overflow-hidden">
@@ -42,7 +45,7 @@ export default function VendorCard({ vendor }: VendorCardProps) {
 
         <div className="flex-1 min-w-0">
           {/* Vendor name */}
-          <h3 className="font-display text-base font-semibold text-market-soil leading-tight">
+          <h3 className="font-display text-base font-semibold text-market-soil leading-tight group-hover:text-market-sage transition-colors">
             {vendor.name}
           </h3>
 
@@ -74,14 +77,6 @@ export default function VendorCard({ vendor }: VendorCardProps) {
       <p className="text-sm text-muted-foreground line-clamp-2 flex-1">
         {vendor.description}
       </p>
-
-      {/* Link */}
-      <Link
-        href={`/vendors/${vendor.slug}`}
-        className="text-sm font-medium text-market-sage hover:text-market-sage-dk transition-colors mt-auto"
-      >
-        View Profile &rarr;
-      </Link>
-    </div>
+    </Link>
   )
 }

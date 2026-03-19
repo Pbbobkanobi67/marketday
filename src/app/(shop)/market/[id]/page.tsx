@@ -4,10 +4,13 @@ import MarketShopClient from './MarketShopClient'
 
 export default async function MarketPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ category?: string }>
 }) {
   const { id } = await params
+  const { category } = await searchParams
 
   const market = await prisma.market.findUnique({
     where: { id },
@@ -64,6 +67,6 @@ export default async function MarketPage({
   }))
 
   return (
-    <MarketShopClient market={serializedMarket} products={serializedProducts} />
+    <MarketShopClient market={serializedMarket} products={serializedProducts} initialCategory={category} />
   )
 }

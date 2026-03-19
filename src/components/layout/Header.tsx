@@ -61,17 +61,22 @@ export default function Header() {
       >
         <div className="container-market flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2.5">
             <Image
               src="/backroads-logo.jpg"
               alt="Backroads Certified Farmers Market"
-              width={40}
-              height={40}
+              width={52}
+              height={52}
               className="rounded-full"
             />
-            <span className="font-display text-xl font-bold text-market-soil hidden sm:inline">
-              Backroads
-            </span>
+            <div className="hidden sm:flex flex-col leading-tight">
+              <span className="font-display text-xl font-bold text-market-soil">
+                Backroads
+              </span>
+              <span className="font-display text-[11px] font-semibold text-market-bark/70 tracking-wide uppercase">
+                Certified Farmers Market
+              </span>
+            </div>
           </Link>
 
           {/* Desktop nav */}

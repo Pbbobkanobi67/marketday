@@ -1,9 +1,36 @@
 import Link from 'next/link'
-import { CalendarDays, MapPin, Clock, ArrowRight } from 'lucide-react'
+import { CalendarDays, MapPin, Clock, ArrowRight, Star } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { MARKET_CONFIG } from '@/config/market.config'
 import { formatMarketDate, formatMarketDateShort, formatMarketDateTime } from '@/lib/utils'
 import VendorCard from '@/components/shop/VendorCard'
+
+const TESTIMONIALS = [
+  {
+    stars: 5,
+    quote:
+      'A great place to shop for organic vegetables, incredible breads, and the ever-changing foods like BBQ and empanadas \u2014 always at reasonable prices.',
+    author: 'Yelp Reviewer',
+  },
+  {
+    stars: 5,
+    quote:
+      "Love this place! They've been a farmers market staple for quite a while and now have their own storefront.",
+    author: 'Yelp Reviewer',
+  },
+  {
+    stars: 5,
+    quote:
+      "There's a genuine sense of community here, with a great mix of fresh produce and delicious food.",
+    author: 'Yelp Reviewer',
+  },
+  {
+    stars: 0,
+    quote:
+      "The feeling you get by helping people, you really can't compare that to anything else.",
+    author: 'Marci Miller, Market President',
+  },
+]
 
 export default async function HomePage() {
   const [markets, vendors] = await Promise.all([
@@ -25,16 +52,15 @@ export default async function HomePage() {
             {/* Left column — copy */}
             <div className="space-y-6">
               <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-market-soil leading-tight">
-                Fresh from
+                Grown, crafted,
                 <br />
-                the farm.
+                made local.
                 <br />
                 <span className="text-market-sage">Ready Saturday.</span>
               </h1>
 
               <p className="text-lg text-muted-foreground max-w-lg">
-                Browse vendors, place your order, and pick up at the market in El Cajon.
-                No waiting, no missing out.
+                Browse local farmers, makers &amp; artisans. Order ahead, pick up at the market in El Cajon.
               </p>
 
               {nextMarket && (
@@ -63,61 +89,72 @@ export default async function HomePage() {
 
             {/* Right column — category cards (desktop) */}
             <div className="hidden lg:grid grid-cols-2 gap-4">
-              {topCategories.map((cat) => (
-                <div
-                  key={cat.value}
-                  className="card-market p-6 flex flex-col items-center justify-center gap-3 text-center hover:shadow-md transition-shadow"
-                >
-                  <span className="text-4xl" role="img" aria-label={cat.label}>
-                    {cat.emoji}
-                  </span>
-                  <span className="font-display text-base font-semibold text-market-soil">
-                    {cat.label}
-                  </span>
-                </div>
-              ))}
+              {topCategories.map((cat) => {
+                const href = nextMarket
+                  ? `/market/${nextMarket.id}?category=${cat.value}`
+                  : '/vendors'
+                return (
+                  <Link
+                    key={cat.value}
+                    href={href}
+                    className="card-market p-6 flex flex-col items-center justify-center gap-3 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                  >
+                    <span className="text-4xl" role="img" aria-label={cat.label}>
+                      {cat.emoji}
+                    </span>
+                    <span className="font-display text-base font-semibold text-market-soil">
+                      {cat.label}
+                    </span>
+                  </Link>
+                )
+              })}
             </div>
           </div>
         </div>
       </section>
 
       {/* ────────────────────────────────────────────────────
-          Section 2 — How It Works
+          Section 2 — How It Works (compact)
       ──────────────────────────────────────────────────── */}
       <section className="bg-white">
-        <div className="container-market py-16 sm:py-20">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold text-market-soil text-center mb-12">
+        <div className="container-market py-10 sm:py-12">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-market-soil text-center mb-8">
             How It Works
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {[
               {
-                step: '1',
+                emoji: '\uD83D\uDED2',
                 heading: 'Browse the market',
-                body: 'Explore vendors by category or scroll the full market listing.',
+                body: 'Explore vendors by category or scroll the full listing.',
               },
               {
-                step: '2',
+                emoji: '\uD83D\uDCE6',
                 heading: 'Add to your bag',
-                body: 'Pick your items, choose a market date. Your bag saves automatically.',
+                body: 'Pick items, choose a market date. Your bag saves automatically.',
               },
               {
-                step: '3',
-                heading: 'Pay now or at the stand',
-                body: 'Secure online payment or reserve free and pay at pickup.',
+                emoji: '\uD83E\uDD1D',
+                heading: 'Pay now or at pickup',
+                body: 'Secure online payment or reserve free and pay at the stand.',
               },
             ].map((item) => (
-              <div key={item.step} className="flex flex-col items-center text-center gap-3">
-                <span className="font-display text-6xl text-market-stone font-bold leading-none">
-                  {item.step}
+              <div
+                key={item.heading}
+                className="flex items-start gap-4 p-4 rounded-xl bg-market-warm/50 border border-market-stone/20"
+              >
+                <span className="text-3xl shrink-0" role="img" aria-hidden="true">
+                  {item.emoji}
                 </span>
-                <h3 className="font-display text-lg font-semibold text-market-soil">
-                  {item.heading}
-                </h3>
-                <p className="text-sm text-muted-foreground max-w-xs">
-                  {item.body}
-                </p>
+                <div>
+                  <h3 className="font-display text-base font-semibold text-market-soil">
+                    {item.heading}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    {item.body}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -162,7 +199,56 @@ export default async function HomePage() {
       )}
 
       {/* ────────────────────────────────────────────────────
-          Section 4 — Upcoming Markets
+          Section 4 — Reviews / Testimonials
+      ──────────────────────────────────────────────────── */}
+      <section className="bg-white">
+        <div className="container-market py-16 sm:py-20">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-market-soil text-center mb-10">
+            What People Are Saying
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {TESTIMONIALS.map((t, i) => (
+              <div
+                key={i}
+                className="card-market p-5 flex flex-col gap-3"
+              >
+                {t.stars > 0 && (
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: t.stars }).map((_, s) => (
+                      <Star
+                        key={s}
+                        className="w-4 h-4 fill-amber-400 text-amber-400"
+                      />
+                    ))}
+                  </div>
+                )}
+                <p className="text-sm text-market-bark leading-relaxed flex-1">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  &mdash; {t.author}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <a
+              href="https://www.yelp.com/biz/backroads-certified-farmers-market-el-cajon"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-market-sage hover:text-market-sage-dk transition-colors inline-flex items-center gap-1"
+            >
+              See all reviews on Yelp
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ────────────────────────────────────────────────────
+          Section 5 — Upcoming Markets
       ──────────────────────────────────────────────────── */}
       <section className="bg-market-warm">
         <div className="container-market py-16 sm:py-20">
