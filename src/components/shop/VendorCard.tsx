@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { categoryLabel, categoryColor, cn } from '@/lib/utils'
+import { categoryLabel, categoryColor, vendorTypeLabel, vendorTypeColor, cn } from '@/lib/utils'
 
 type VendorCardProps = {
   vendor: {
@@ -9,6 +9,7 @@ type VendorCardProps = {
     description: string
     category: string
     logoUrl: string | null
+    vendorType?: string
   }
 }
 
@@ -45,15 +46,27 @@ export default function VendorCard({ vendor }: VendorCardProps) {
             {vendor.name}
           </h3>
 
-          {/* Category badge */}
-          <span
-            className={cn(
-              'inline-block mt-1.5 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full',
-              categoryColor(vendor.category)
+          {/* Badges */}
+          <div className="flex flex-wrap gap-1.5 mt-1.5">
+            <span
+              className={cn(
+                'inline-block text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full',
+                categoryColor(vendor.category)
+              )}
+            >
+              {categoryLabel(vendor.category)}
+            </span>
+            {vendor.vendorType && (
+              <span
+                className={cn(
+                  'inline-block text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full',
+                  vendorTypeColor(vendor.vendorType)
+                )}
+              >
+                {vendorTypeLabel(vendor.vendorType)}
+              </span>
             )}
-          >
-            {categoryLabel(vendor.category)}
-          </span>
+          </div>
         </div>
       </div>
 
@@ -67,7 +80,7 @@ export default function VendorCard({ vendor }: VendorCardProps) {
         href={`/vendors/${vendor.slug}`}
         className="text-sm font-medium text-market-sage hover:text-market-sage-dk transition-colors mt-auto"
       >
-        View Products &rarr;
+        View Profile &rarr;
       </Link>
     </div>
   )

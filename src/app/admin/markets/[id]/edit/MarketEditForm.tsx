@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { useTransition } from 'react'
 import Link from 'next/link'
+import { MARKET_CONFIG } from '@/config/market.config'
 import { updateMarket } from '../../actions'
 
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,8 @@ import { Separator } from '@/components/ui/separator'
 
 const STATUSES = ['DRAFT', 'UPCOMING', 'ACTIVE', 'PAST', 'CANCELLED'] as const
 
+const selectClass = 'flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
+
 const marketSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   date: z.string().min(1, 'Date is required'),
@@ -23,6 +26,7 @@ const marketSchema = z.object({
   location: z.string().min(1, 'Location is required'),
   address: z.string().min(1, 'Address is required'),
   description: z.string().optional(),
+  type: z.string().min(1, 'Type is required'),
   status: z.string().min(1, 'Status is required'),
 })
 
@@ -38,6 +42,7 @@ interface MarketEditFormProps {
     location: string
     address: string
     description: string
+    type: string
     status: string
   }
 }
@@ -59,6 +64,7 @@ export function MarketEditForm({ market }: MarketEditFormProps) {
       location: market.location,
       address: market.address,
       description: market.description,
+      type: market.type,
       status: market.status,
     },
   })
@@ -94,7 +100,7 @@ export function MarketEditForm({ market }: MarketEditFormProps) {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
             <Input
@@ -109,10 +115,29 @@ export function MarketEditForm({ market }: MarketEditFormProps) {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="type">Type</Label>
+            <select
+              id="type"
+              className={selectClass}
+              {...register('type')}
+              aria-invalid={!!errors.type}
+            >
+              {MARKET_CONFIG.marketTypes.map((mt) => (
+                <option key={mt.value} value={mt.value}>
+                  {mt.label}
+                </option>
+              ))}
+            </select>
+            {errors.type && (
+              <p className="text-sm text-destructive">{errors.type.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
             <select
               id="status"
-              className="flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              className={selectClass}
               {...register('status')}
               aria-invalid={!!errors.status}
             >
@@ -135,7 +160,7 @@ export function MarketEditForm({ market }: MarketEditFormProps) {
             <Label htmlFor="openTime">Open Time</Label>
             <Input
               id="openTime"
-              placeholder="8:00 AM"
+              placeholder="9:00 AM"
               {...register('openTime')}
               aria-invalid={!!errors.openTime}
             />

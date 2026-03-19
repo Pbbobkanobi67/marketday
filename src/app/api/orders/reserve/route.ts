@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL || 'orders@marketday.com',
           to: data.customerEmail,
-          subject: `Your MarketDay order is confirmed — ${orderNumber}`,
+          subject: `Your Backroads Market order is confirmed — ${orderNumber}`,
           html: buildOrderConfirmationEmail({
             customerName: data.customerName,
             orderNumber,

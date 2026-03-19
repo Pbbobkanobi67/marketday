@@ -22,9 +22,20 @@ const vendorSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   category: z.string().min(1, 'Category is required'),
   isActive: z.boolean(),
+  contactPerson: z.string().optional(),
+  email: z.string().email('Invalid email').optional().or(z.literal('')),
+  phone: z.string().optional(),
+  website: z.string().optional(),
+  instagramHandle: z.string().optional(),
+  facebookHandle: z.string().optional(),
+  vendorType: z.string().min(1, 'Vendor type is required'),
+  businessDescription: z.string().optional(),
+  onlineOrdersEnabled: z.boolean(),
 })
 
 type VendorFormValues = z.infer<typeof vendorSchema>
+
+const selectClass = 'flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
 
 export default function NewVendorPage() {
   const [isPending, startTransition] = useTransition()
@@ -43,10 +54,20 @@ export default function NewVendorPage() {
       description: '',
       category: '',
       isActive: true,
+      contactPerson: '',
+      email: '',
+      phone: '',
+      website: '',
+      instagramHandle: '',
+      facebookHandle: '',
+      vendorType: 'certified_farmer',
+      businessDescription: '',
+      onlineOrdersEnabled: false,
     },
   })
 
   const isActive = watch('isActive')
+  const onlineOrdersEnabled = watch('onlineOrdersEnabled')
 
   function onNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     const name = e.target.value
@@ -72,6 +93,7 @@ export default function NewVendorPage() {
       <Separator />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Basic Info */}
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input
@@ -115,39 +137,131 @@ export default function NewVendorPage() {
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="category">Category</Label>
-          <select
-            id="category"
-            className="flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-            {...register('category')}
-            aria-invalid={!!errors.category}
-          >
-            <option value="">Select a category</option>
-            {MARKET_CONFIG.categories.map((cat) => (
-              <option key={cat.value} value={cat.value}>
-                {cat.label}
-              </option>
-            ))}
-          </select>
-          {errors.category && (
-            <p className="text-sm text-destructive">
-              {errors.category.message}
-            </p>
-          )}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <select
+              id="category"
+              className={selectClass}
+              {...register('category')}
+              aria-invalid={!!errors.category}
+            >
+              <option value="">Select a category</option>
+              {MARKET_CONFIG.categories.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+            {errors.category && (
+              <p className="text-sm text-destructive">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="vendorType">Vendor Type</Label>
+            <select
+              id="vendorType"
+              className={selectClass}
+              {...register('vendorType')}
+              aria-invalid={!!errors.vendorType}
+            >
+              {MARKET_CONFIG.vendorTypes.map((vt) => (
+                <option key={vt.value} value={vt.value}>
+                  {vt.label}
+                </option>
+              ))}
+            </select>
+            {errors.vendorType && (
+              <p className="text-sm text-destructive">
+                {errors.vendorType.message}
+              </p>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="isActive"
-            checked={isActive}
-            onCheckedChange={(checked) =>
-              setValue('isActive', checked === true)
-            }
+        <Separator />
+
+        {/* Contact Info */}
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Contact Info</h3>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="contactPerson">Contact Person</Label>
+            <Input id="contactPerson" placeholder="Full name" {...register('contactPerson')} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="vendor@example.com" {...register('email')} />
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone</Label>
+            <Input id="phone" placeholder="(619) 555-0100" {...register('phone')} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="website">Website</Label>
+            <Input id="website" placeholder="https://..." {...register('website')} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="instagramHandle">Instagram Handle</Label>
+            <Input id="instagramHandle" placeholder="@handle" {...register('instagramHandle')} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="facebookHandle">Facebook</Label>
+            <Input id="facebookHandle" placeholder="Page name or URL" {...register('facebookHandle')} />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="businessDescription">Business Description</Label>
+          <Textarea
+            id="businessDescription"
+            placeholder="Longer description of the business, history, etc."
+            rows={3}
+            {...register('businessDescription')}
           />
-          <Label htmlFor="isActive" className="cursor-pointer">
-            Active
-          </Label>
+        </div>
+
+        <Separator />
+
+        {/* Toggles */}
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="isActive"
+              checked={isActive}
+              onCheckedChange={(checked) =>
+                setValue('isActive', checked === true)
+              }
+            />
+            <Label htmlFor="isActive" className="cursor-pointer">
+              Active
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="onlineOrdersEnabled"
+              checked={onlineOrdersEnabled}
+              onCheckedChange={(checked) =>
+                setValue('onlineOrdersEnabled', checked === true)
+              }
+            />
+            <Label htmlFor="onlineOrdersEnabled" className="cursor-pointer">
+              Online Orders Enabled
+            </Label>
+          </div>
         </div>
 
         <Separator />

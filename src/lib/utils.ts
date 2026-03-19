@@ -32,20 +32,56 @@ export function truncate(str: string, length: number): string {
 
 export function categoryLabel(value: string): string {
   const map: Record<string, string> = {
-    produce: 'Produce', baked: 'Baked Goods', meat: 'Meat & Poultry',
-    dairy: 'Dairy', specialty: 'Specialty Foods', flowers: 'Flowers & Plants',
+    certified_farmer: 'Certified Farmer',
+    artisan_craft: 'Artisan Craft',
+    hot_food: 'Hot Food',
+    baked: 'Baked Goods',
+    specialty: 'Specialty Foods',
+    nonprofit: 'Nonprofit',
   }
   return map[value] || value
 }
 
 export function categoryColor(value: string): string {
   const map: Record<string, string> = {
-    produce: 'bg-green-100 text-green-800',
+    certified_farmer: 'bg-green-100 text-green-800',
+    artisan_craft: 'bg-violet-100 text-violet-800',
+    hot_food: 'bg-orange-100 text-orange-800',
     baked: 'bg-amber-100 text-amber-800',
-    meat: 'bg-red-100 text-red-800',
-    dairy: 'bg-blue-100 text-blue-800',
     specialty: 'bg-purple-100 text-purple-800',
-    flowers: 'bg-pink-100 text-pink-800',
+    nonprofit: 'bg-yellow-100 text-yellow-800',
   }
   return map[value] || 'bg-gray-100 text-gray-800'
+}
+
+export function vendorTypeLabel(value: string): string {
+  const map: Record<string, string> = {
+    certified_farmer: 'Certified Farmer',
+    artisan_craft: 'Artisan / Craft',
+    hot_food: 'Hot Food Vendor',
+    baked_goods: 'Baked Goods',
+    specialty_food: 'Specialty Food',
+    nonprofit: 'Nonprofit',
+  }
+  return map[value] || value
+}
+
+export function vendorTypeColor(value: string): string {
+  const map: Record<string, string> = {
+    certified_farmer: 'bg-green-100 text-green-800',
+    artisan_craft: 'bg-violet-100 text-violet-800',
+    hot_food: 'bg-orange-100 text-orange-800',
+    baked_goods: 'bg-amber-100 text-amber-800',
+    specialty_food: 'bg-purple-100 text-purple-800',
+    nonprofit: 'bg-yellow-100 text-yellow-800',
+  }
+  return map[value] || 'bg-gray-100 text-gray-800'
+}
+
+export function marketTypeLabel(value: string): string {
+  const map: Record<string, string> = {
+    SATURDAY_MARKET: 'Saturday Market',
+    PICKUP_EVENT: 'Pickup Event',
+  }
+  return map[value] || value
 }

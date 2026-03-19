@@ -3,7 +3,7 @@ import CartPageClient from './CartPageClient'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Your Bag | MarketDay',
+  title: 'Your Bag | Backroads Certified Farmers Market',
   description: 'Review your market bag and choose a pickup date.',
 }
 

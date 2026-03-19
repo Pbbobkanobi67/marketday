@@ -16,6 +16,7 @@ type SerializedMarket = {
   address: string
   description: string | null
   status: string
+  type?: string
 }
 
 type PaymentMethod = 'STRIPE' | 'AT_MARKET' | null
@@ -194,6 +195,11 @@ export default function CartPageClient({ markets }: { markets: SerializedMarket[
                     <span className="text-xs text-muted-foreground mt-0.5">
                       {market.location}
                     </span>
+                    {market.type === 'PICKUP_EVENT' && (
+                      <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium bg-indigo-100 text-indigo-800 mt-1 w-fit">
+                        Pickup Event
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>

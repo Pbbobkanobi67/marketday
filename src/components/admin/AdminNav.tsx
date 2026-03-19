@@ -10,6 +10,8 @@ import {
   Store,
   Package,
   Calendar,
+  ClipboardList,
+  CalendarDays,
   LogOut,
   Menu,
   X,
@@ -28,9 +30,11 @@ type AdminNavProps = {
 const navLinks = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
+  { href: '/admin/calendar', label: 'Calendar', icon: CalendarDays },
   { href: '/admin/vendors', label: 'Vendors', icon: Store },
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/markets', label: 'Markets', icon: Calendar },
+  { href: '/admin/applications', label: 'Applications', icon: ClipboardList },
 ]
 
 export default function AdminNav({ session }: AdminNavProps) {
@@ -49,7 +53,7 @@ export default function AdminNav({ session }: AdminNavProps) {
       {/* Logo */}
       <div className="px-6 py-5 border-b border-market-stone/40">
         <h1 className="font-display text-xl text-market-sage font-bold">
-          MarketDay
+          Backroads
         </h1>
         <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-widest text-market-bark bg-market-warm px-2 py-0.5 rounded">
           Admin
@@ -102,7 +106,7 @@ export default function AdminNav({ session }: AdminNavProps) {
       {/* Mobile header bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-market-stone/40 px-4 py-3 flex items-center justify-between">
         <h1 className="font-display text-lg text-market-sage font-bold">
-          MarketDay
+          Backroads
         </h1>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}

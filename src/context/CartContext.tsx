@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
 import type { CartItem, CartState } from '@/types'
 
-const STORAGE_KEY = 'marketday-cart'
+const STORAGE_KEY = 'backroads-cart'
 
 const defaultCart: CartState = { marketId: null, items: [] }
 

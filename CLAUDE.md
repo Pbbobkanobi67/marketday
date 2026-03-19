@@ -1,8 +1,8 @@
-# MarketDay
+# Backroads Certified Farmers Market
 
-White-label farmers market online ordering platform. Shoppers browse vendors/products, pick a market date, and either pay online (Stripe — stubbed) or reserve for pay-at-market pickup. Two admin users manage everything.
+Online ordering platform for Backroads Certified Farmers Market in El Cajon, CA. Shoppers browse vendors/products, pick a market date, and either pay online (Stripe — stubbed) or reserve for pay-at-market pickup. Two admin users manage everything including vendor assignments, calendar, and vendor applications.
 
-**Demo identity:** Liberty Station Public Market, San Diego, CA
+**Identity:** Backroads Certified Farmers Market, 14335 Olde Hwy 80, El Cajon, CA 92021
 
 ## Tech Stack
 
@@ -23,18 +23,21 @@ src/
   app/
     (shop)/               # Public shop pages (layout with Header/Footer/CartDrawer)
       page.tsx             # Homepage — hero, how-it-works, vendors, markets
-      market/[id]/         # Market shop page with category filters
-      vendors/             # Vendor list + detail pages
+      market/[id]/         # Market shop page (filtered by assigned vendors w/ online ordering)
+      vendors/             # Vendor list + detail pages (enhanced profiles)
       cart/                # Cart page with market/payment selection
       checkout/            # Checkout form (react-hook-form + zod)
       order/[id]/          # Order confirmation
+      apply/               # Public vendor application form
     admin/                 # Protected admin area
       login/               # Admin login (NextAuth credentials)
       dashboard/           # Stats, next market, recent orders
       orders/              # Order list + detail with status updates
-      vendors/             # Vendor CRUD (list, new, edit)
+      calendar/            # Monthly calendar grid with market overview
+      vendors/             # Vendor CRUD (list, new, edit) with extended fields
       products/            # Product CRUD
-      markets/             # Market CRUD
+      markets/             # Market CRUD + vendor assignment per market
+      applications/        # Vendor application management (approve/reject/convert)
     api/
       auth/[...nextauth]/  # NextAuth handler
       orders/reserve/      # AT_MARKET order creation
@@ -47,15 +50,26 @@ src/
     admin/                # AdminNav, StatCard, OrderStatusBadge, OrderStatusUpdater
     ui/                   # shadcn/ui primitives
   config/market.config.ts # White-label config (all branding in one file)
-  context/CartContext.tsx  # Cart state (localStorage persistence)
+  context/CartContext.tsx  # Cart state (localStorage persistence, key: backroads-cart)
   generated/prisma/       # Prisma generated client (gitignored)
   lib/                    # prisma.ts, auth.ts, utils.ts, stripe.ts (stub), resend.ts
   types/index.ts          # NextAuth augmentation + Cart/Checkout types
 prisma/
-  schema.prisma           # SQLite schema (6 models)
-  seed.ts                 # Seed data (2 admins, 3 markets, 8 vendors, 24 products, 5 orders)
+  schema.prisma           # SQLite schema (8 models)
+  seed.ts                 # Seed data (2 admins, 5 markets, 6 vendors, 12 products, 3 orders)
   dev.db                  # SQLite database (gitignored)
 ```
+
+## Database Models (8)
+
+- **AdminUser** — admin login accounts
+- **Market** — market days with type (SATURDAY_MARKET | PICKUP_EVENT) and status
+- **Vendor** — extended with contact info, social handles, vendorType, onlineOrdersEnabled
+- **MarketVendor** — join table: which vendors are at which market (booth space, fee, paid status)
+- **VendorApplication** — public application submissions (PENDING | APPROVED | REJECTED)
+- **Product** — items for sale
+- **Order** — customer orders
+- **OrderItem** — line items in orders
 
 ## Key Patterns
 
@@ -67,6 +81,9 @@ prisma/
 - **White-label**: All branding lives in `src/config/market.config.ts`
 - **Stripe stubbed**: `src/lib/stripe.ts` exports mock functions that simulate checkout
 - **Server actions**: Admin CRUD uses Next.js server actions in `actions.ts` files
+- **Online order gating**: `/market/[id]` only shows products from vendors with `onlineOrdersEnabled = true` AND assigned to that market via MarketVendor
+- **Vendor types**: certified_farmer, artisan_craft, hot_food, baked_goods, specialty_food, nonprofit
+- **Market types**: SATURDAY_MARKET, PICKUP_EVENT
 
 ## Commands
 
@@ -82,13 +99,15 @@ npx prisma db seed       # Seed database
 
 ## Admin Credentials
 
-- `marci@marketday.com` / `marci2026`
-- `jessica@marketday.com` / `jessica2026`
+- `marci@backroadsmarket.com` / `marci2026`
+- `jessica@backroadsmarket.com` / `jessica2026`
 
 ## Conventions
 
 - Use Tailwind utility classes; shadcn/ui for form elements and data display
 - Keep components in their feature folder under `src/components/`
 - Categories defined in `MARKET_CONFIG.categories` — update there for new categories
+- Vendor types defined in `MARKET_CONFIG.vendorTypes`
+- Market types defined in `MARKET_CONFIG.marketTypes`
 - Prices stored as integers (cents) in database, formatted via `formatPrice()`
 - All market-specific copy/config in `market.config.ts` for white-label rebranding

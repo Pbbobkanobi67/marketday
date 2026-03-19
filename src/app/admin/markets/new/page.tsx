@@ -16,6 +16,8 @@ import { Separator } from '@/components/ui/separator'
 
 const STATUSES = ['DRAFT', 'UPCOMING', 'ACTIVE', 'PAST', 'CANCELLED'] as const
 
+const selectClass = 'flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
+
 const marketSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   date: z.string().min(1, 'Date is required'),
@@ -24,6 +26,7 @@ const marketSchema = z.object({
   location: z.string().min(1, 'Location is required'),
   address: z.string().min(1, 'Address is required'),
   description: z.string().optional(),
+  type: z.string().min(1, 'Type is required'),
   status: z.string().min(1, 'Status is required'),
 })
 
@@ -46,6 +49,7 @@ export default function NewMarketPage() {
       location: MARKET_CONFIG.venueName,
       address: MARKET_CONFIG.venueFullAddress,
       description: '',
+      type: 'SATURDAY_MARKET',
       status: 'DRAFT',
     },
   })
@@ -61,7 +65,7 @@ export default function NewMarketPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Add Market</h1>
         <p className="text-sm text-muted-foreground">
-          Schedule a new market day.
+          Schedule a new market day or pickup event.
         </p>
       </div>
 
@@ -81,7 +85,7 @@ export default function NewMarketPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
             <Input
@@ -96,10 +100,29 @@ export default function NewMarketPage() {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="type">Type</Label>
+            <select
+              id="type"
+              className={selectClass}
+              {...register('type')}
+              aria-invalid={!!errors.type}
+            >
+              {MARKET_CONFIG.marketTypes.map((mt) => (
+                <option key={mt.value} value={mt.value}>
+                  {mt.label}
+                </option>
+              ))}
+            </select>
+            {errors.type && (
+              <p className="text-sm text-destructive">{errors.type.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
             <select
               id="status"
-              className="flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              className={selectClass}
               {...register('status')}
               aria-invalid={!!errors.status}
             >
@@ -122,7 +145,7 @@ export default function NewMarketPage() {
             <Label htmlFor="openTime">Open Time</Label>
             <Input
               id="openTime"
-              placeholder="8:00 AM"
+              placeholder="9:00 AM"
               {...register('openTime')}
               aria-invalid={!!errors.openTime}
             />

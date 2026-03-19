@@ -18,7 +18,7 @@ model AdminUser {
 }
 
 model Market {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
   date        DateTime
   openTime    String
@@ -26,24 +26,72 @@ model Market {
   location    String
   address     String
   description String?
-  status      String   @default("UPCOMING")
+  type        String         @default("SATURDAY_MARKET")
+  status      String         @default("UPCOMING")
   orders      Order[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  vendors     MarketVendor[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
 model Vendor {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String
-  logoUrl     String?
-  category    String
-  isActive    Boolean     @default(true)
-  products    Product[]
-  orderItems  OrderItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                  String         @id @default(cuid())
+  name                String
+  slug                String         @unique
+  description         String
+  logoUrl             String?
+  category            String
+  isActive            Boolean        @default(true)
+  contactPerson       String?
+  email               String?
+  phone               String?
+  website             String?
+  instagramHandle     String?
+  facebookHandle      String?
+  vendorType          String         @default("certified_farmer")
+  businessDescription String?
+  boothImageUrl       String?
+  signupDate          DateTime?
+  onlineOrdersEnabled Boolean        @default(false)
+  products            Product[]
+  orderItems          OrderItem[]
+  markets             MarketVendor[]
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+}
+
+model MarketVendor {
+  id        String  @id @default(cuid())
+  marketId  String
+  market    Market  @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  vendorId  String
+  vendor    Vendor  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  boothSpace String?
+  boothFee  Int?
+  isPaid    Boolean @default(false)
+  notes     String?
+
+  @@unique([marketId, vendorId])
+}
+
+model VendorApplication {
+  id                  String   @id @default(cuid())
+  businessName        String
+  contactPerson       String
+  email               String
+  phone               String?
+  website             String?
+  instagramHandle     String?
+  facebookHandle      String?
+  vendorType          String   @default("certified_farmer")
+  productsDescription String?
+  pricingDescription  String?
+  businessDescription String?
+  boothImageUrl       String?
+  status              String   @default("PENDING")
+  adminNotes          String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model Product {

@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 import { Loader2 } from 'lucide-react'
 
 export default function AdminLoginPage() {
@@ -42,8 +43,15 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-market-cream flex items-start justify-center pt-24 px-4">
       <div className="card-market max-w-sm w-full mx-auto p-8">
         <div className="text-center mb-8">
+          <Image
+            src="/backroads-logo.jpg"
+            alt="Backroads Certified Farmers Market"
+            width={80}
+            height={80}
+            className="rounded-full mx-auto mb-3"
+          />
           <h1 className="font-display text-2xl text-market-sage font-bold">
-            MarketDay
+            Backroads
           </h1>
           <p className="text-sm text-muted-foreground mt-1">Admin Portal</p>
         </div>
@@ -54,7 +62,7 @@ export default function AdminLoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@marketday.com"
+              placeholder="admin@backroadsmarket.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

@@ -1,10 +1,12 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { MARKET_CONFIG } from '@/config/market.config'
 
 const FOOTER_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Vendors', href: '/vendors' },
   { label: 'Markets', href: '/markets' },
+  { label: 'Become a Vendor', href: '/apply' },
 ]
 
 export default function Footer() {
@@ -14,8 +16,17 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
           {/* Logo and tagline */}
           <div className="space-y-2">
-            <Link href="/" className="font-display text-xl font-bold text-white hover:text-market-warm transition-colors">
-              {MARKET_CONFIG.marketName}
+            <Link href="/" className="inline-flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <Image
+                src="/backroads-logo.jpg"
+                alt="Backroads Certified Farmers Market"
+                width={36}
+                height={36}
+                className="rounded-full"
+              />
+              <span className="font-display text-xl font-bold text-white">
+                {MARKET_CONFIG.marketName}
+              </span>
             </Link>
             <p className="text-sm text-white/70 max-w-xs">
               {MARKET_CONFIG.tagline}

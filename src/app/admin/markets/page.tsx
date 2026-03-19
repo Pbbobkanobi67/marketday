@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import { formatMarketDate, cn } from '@/lib/utils'
-import { Plus, Pencil } from 'lucide-react'
+import { formatMarketDate, marketTypeLabel, cn } from '@/lib/utils'
+import { Plus, Pencil, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -21,9 +21,16 @@ const STATUS_STYLES: Record<string, string> = {
   CANCELLED: 'bg-red-100 text-red-800',
 }
 
+const TYPE_STYLES: Record<string, string> = {
+  SATURDAY_MARKET: 'bg-emerald-100 text-emerald-800',
+  PICKUP_EVENT: 'bg-indigo-100 text-indigo-800',
+}
+
 export default async function AdminMarketsPage() {
   const markets = await prisma.market.findMany({
-    include: { _count: { select: { orders: true } } },
+    include: {
+      _count: { select: { orders: true, vendors: true } },
+    },
     orderBy: { date: 'desc' },
   })
 
@@ -64,7 +71,9 @@ export default async function AdminMarketsPage() {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Date</TableHead>
+              <TableHead>Type</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead className="text-center">Vendors</TableHead>
               <TableHead className="text-center">Orders</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -80,6 +89,16 @@ export default async function AdminMarketsPage() {
                   <span
                     className={cn(
                       'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
+                      TYPE_STYLES[market.type] || TYPE_STYLES.SATURDAY_MARKET
+                    )}
+                  >
+                    {marketTypeLabel(market.type)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={cn(
+                      'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
                       STATUS_STYLES[market.status] || STATUS_STYLES.DRAFT
                     )}
                   >
@@ -87,19 +106,34 @@ export default async function AdminMarketsPage() {
                   </span>
                 </TableCell>
                 <TableCell className="text-center">
+                  {market._count.vendors}
+                </TableCell>
+                <TableCell className="text-center">
                   {market._count.orders}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    render={
-                      <Link href={`/admin/markets/${market.id}/edit`} />
-                    }
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                    <span className="sr-only">Edit {market.name}</span>
-                  </Button>
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      render={
+                        <Link href={`/admin/markets/${market.id}/vendors`} />
+                      }
+                    >
+                      <Users className="h-3.5 w-3.5" />
+                      <span className="sr-only">Manage vendors for {market.name}</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      render={
+                        <Link href={`/admin/markets/${market.id}/edit`} />
+                      }
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      <span className="sr-only">Edit {market.name}</span>
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

@@ -24,6 +24,15 @@ export default async function EditVendorPage({
         description: vendor.description,
         category: vendor.category,
         isActive: vendor.isActive,
+        contactPerson: vendor.contactPerson,
+        email: vendor.email,
+        phone: vendor.phone,
+        website: vendor.website,
+        instagramHandle: vendor.instagramHandle,
+        facebookHandle: vendor.facebookHandle,
+        vendorType: vendor.vendorType,
+        businessDescription: vendor.businessDescription,
+        onlineOrdersEnabled: vendor.onlineOrdersEnabled,
       }}
     />
   )

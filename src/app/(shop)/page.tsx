@@ -33,7 +33,7 @@ export default async function HomePage() {
               </h1>
 
               <p className="text-lg text-muted-foreground max-w-lg">
-                Browse vendors, place your order, and pick up at Liberty Station.
+                Browse vendors, place your order, and pick up at the market in El Cajon.
                 No waiting, no missing out.
               </p>
 

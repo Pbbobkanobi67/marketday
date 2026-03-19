@@ -12,6 +12,7 @@ export async function createMarket(formData: {
   location: string
   address: string
   description?: string
+  type: string
   status: string
 }) {
   await prisma.market.create({
@@ -35,6 +36,7 @@ export async function updateMarket(
     location: string
     address: string
     description?: string
+    type: string
     status: string
   }
 ) {

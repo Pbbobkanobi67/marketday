@@ -17,6 +17,7 @@ type MarketData = {
   address: string
   description: string | null
   status: string
+  type?: string
 }
 
 type ProductWithVendor = {

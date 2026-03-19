@@ -3,7 +3,7 @@ import VendorCard from '@/components/shop/VendorCard'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Vendors | MarketDay',
+  title: 'Vendors | Backroads Certified Farmers Market',
   description: 'Meet the makers behind the market. Browse local vendors and their farm-fresh products.',
 }
 

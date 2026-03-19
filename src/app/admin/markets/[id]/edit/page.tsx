@@ -26,6 +26,7 @@ export default async function EditMarketPage({
         location: market.location,
         address: market.address,
         description: market.description || '',
+        type: market.type,
         status: market.status,
       }}
     />

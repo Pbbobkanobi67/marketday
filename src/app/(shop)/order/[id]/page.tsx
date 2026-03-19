@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { orderNumber: true },
   })
   return {
-    title: order ? `Order ${order.orderNumber} | MarketDay` : 'Order Not Found | MarketDay',
+    title: order ? `Order ${order.orderNumber} | Backroads Market` : 'Order Not Found | Backroads Market',
   }
 }
 

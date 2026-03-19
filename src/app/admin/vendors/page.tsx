@@ -1,9 +1,8 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import { categoryLabel, categoryColor, cn } from '@/lib/utils'
+import { categoryLabel, categoryColor, vendorTypeLabel, vendorTypeColor, cn } from '@/lib/utils'
 import { Plus, Pencil, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
   Table,
@@ -57,7 +56,9 @@ export default async function AdminVendorsPage() {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>Vendor Type</TableHead>
               <TableHead className="text-center">Products</TableHead>
+              <TableHead className="text-center">Online</TableHead>
               <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -76,8 +77,29 @@ export default async function AdminVendorsPage() {
                     {categoryLabel(vendor.category)}
                   </span>
                 </TableCell>
+                <TableCell>
+                  <span
+                    className={cn(
+                      'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
+                      vendorTypeColor(vendor.vendorType)
+                    )}
+                  >
+                    {vendorTypeLabel(vendor.vendorType)}
+                  </span>
+                </TableCell>
                 <TableCell className="text-center">
                   {vendor._count.products}
+                </TableCell>
+                <TableCell className="text-center">
+                  <span className="inline-flex items-center gap-1.5 text-xs">
+                    <span
+                      className={cn(
+                        'inline-block h-2 w-2 rounded-full',
+                        vendor.onlineOrdersEnabled ? 'bg-blue-500' : 'bg-gray-400'
+                      )}
+                    />
+                    {vendor.onlineOrdersEnabled ? 'Yes' : 'No'}
+                  </span>
                 </TableCell>
                 <TableCell className="text-center">
                   <span className="inline-flex items-center gap-1.5 text-xs">

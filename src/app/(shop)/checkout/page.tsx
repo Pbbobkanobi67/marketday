@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 export const metadata: Metadata = {
-  title: 'Checkout | MarketDay',
+  title: 'Checkout | Backroads Market',
   description: 'Complete your order and choose your pickup details.',
 }
 

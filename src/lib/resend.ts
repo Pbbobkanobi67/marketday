@@ -40,8 +40,8 @@ export function buildOrderConfirmationEmail({
 <body style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#FAF7F2;margin:0;padding:0">
   <div style="max-width:540px;margin:32px auto;background:white;border-radius:12px;overflow:hidden;border:1px solid #E8DDD0">
     <div style="background:#6B8F71;padding:28px 32px">
-      <h1 style="margin:0;color:white;font-size:22px;font-weight:600">MarketDay</h1>
-      <p style="margin:4px 0 0;color:rgba(255,255,255,0.85);font-size:14px">Liberty Station Public Market \u00b7 San Diego</p>
+      <h1 style="margin:0;color:white;font-size:22px;font-weight:600">Backroads Certified Farmers Market</h1>
+      <p style="margin:4px 0 0;color:rgba(255,255,255,0.85);font-size:14px">El Cajon, CA</p>
     </div>
     <div style="padding:32px">
       <h2 style="margin:0 0 4px;color:#4A3728;font-size:20px">Your order is confirmed, ${customerName.split(' ')[0]}!</h2>

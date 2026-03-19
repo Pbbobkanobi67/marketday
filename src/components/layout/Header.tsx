@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ShoppingBag, Menu, X } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { cn } from '@/lib/utils'
@@ -9,6 +10,7 @@ import CartDrawer from '@/components/shop/CartDrawer'
 
 const NAV_LINKS = [
   { label: 'Vendors', href: '/vendors' },
+  { label: 'Become a Vendor', href: '/apply' },
   { label: 'This Saturday \u2192', href: '/markets/next' },
 ]
 
@@ -59,9 +61,16 @@ export default function Header() {
       >
         <div className="container-market flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-1.5">
-            <span className="font-display text-xl font-bold text-market-soil">
-              MarketDay
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/backroads-logo.jpg"
+              alt="Backroads Certified Farmers Market"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+            <span className="font-display text-xl font-bold text-market-soil hidden sm:inline">
+              Backroads
             </span>
           </Link>
 
@@ -131,9 +140,18 @@ export default function Header() {
               <Link
                 href="/"
                 onClick={() => setMobileOpen(false)}
-                className="font-display text-xl font-bold text-market-soil"
+                className="flex items-center gap-2"
               >
-                MarketDay
+                <Image
+                  src="/backroads-logo.jpg"
+                  alt="Backroads Certified Farmers Market"
+                  width={36}
+                  height={36}
+                  className="rounded-full"
+                />
+                <span className="font-display text-xl font-bold text-market-soil">
+                  Backroads
+                </span>
               </Link>
               <button
                 onClick={() => setMobileOpen(false)}

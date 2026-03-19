@@ -27,7 +27,7 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   title: MARKET_CONFIG.siteTitle,
   description: MARKET_CONFIG.siteDescription,
-  keywords: 'farmers market, San Diego, fresh produce, local food, Liberty Station',
+  keywords: 'farmers market, El Cajon, fresh produce, local food, Backroads, certified farmers market',
   openGraph: {
     title: MARKET_CONFIG.siteTitle,
     description: MARKET_CONFIG.siteDescription,
