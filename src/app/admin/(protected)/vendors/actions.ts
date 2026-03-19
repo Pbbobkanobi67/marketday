@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import bcrypt from 'bcryptjs'
 
 export async function createVendor(formData: {
   name: string
@@ -19,24 +20,31 @@ export async function createVendor(formData: {
   vendorType: string
   businessDescription?: string
   onlineOrdersEnabled: boolean
+  portalPassword?: string
 }) {
+  const { portalPassword, ...rest } = formData
+  const hashedPassword = portalPassword
+    ? await bcrypt.hash(portalPassword, 10)
+    : null
+
   await prisma.vendor.create({
     data: {
-      name: formData.name,
-      slug: formData.slug,
-      description: formData.description,
-      category: formData.category,
-      isActive: formData.isActive,
-      contactPerson: formData.contactPerson || null,
-      email: formData.email || null,
-      phone: formData.phone || null,
-      website: formData.website || null,
-      instagramHandle: formData.instagramHandle || null,
-      facebookHandle: formData.facebookHandle || null,
-      vendorType: formData.vendorType,
-      businessDescription: formData.businessDescription || null,
-      onlineOrdersEnabled: formData.onlineOrdersEnabled,
+      name: rest.name,
+      slug: rest.slug,
+      description: rest.description,
+      category: rest.category,
+      isActive: rest.isActive,
+      contactPerson: rest.contactPerson || null,
+      email: rest.email || null,
+      phone: rest.phone || null,
+      website: rest.website || null,
+      instagramHandle: rest.instagramHandle || null,
+      facebookHandle: rest.facebookHandle || null,
+      vendorType: rest.vendorType,
+      businessDescription: rest.businessDescription || null,
+      onlineOrdersEnabled: rest.onlineOrdersEnabled,
       signupDate: new Date(),
+      hashedPassword,
     },
   })
   revalidatePath('/admin/vendors')
@@ -60,27 +68,41 @@ export async function updateVendor(
     vendorType: string
     businessDescription?: string
     onlineOrdersEnabled: boolean
+    portalPassword?: string
   }
 ) {
-  await prisma.vendor.update({
-    where: { id },
-    data: {
-      name: formData.name,
-      slug: formData.slug,
-      description: formData.description,
-      category: formData.category,
-      isActive: formData.isActive,
-      contactPerson: formData.contactPerson || null,
-      email: formData.email || null,
-      phone: formData.phone || null,
-      website: formData.website || null,
-      instagramHandle: formData.instagramHandle || null,
-      facebookHandle: formData.facebookHandle || null,
-      vendorType: formData.vendorType,
-      businessDescription: formData.businessDescription || null,
-      onlineOrdersEnabled: formData.onlineOrdersEnabled,
-    },
-  })
+  const { portalPassword, ...rest } = formData
+
+  const data: Record<string, unknown> = {
+    name: rest.name,
+    slug: rest.slug,
+    description: rest.description,
+    category: rest.category,
+    isActive: rest.isActive,
+    contactPerson: rest.contactPerson || null,
+    email: rest.email || null,
+    phone: rest.phone || null,
+    website: rest.website || null,
+    instagramHandle: rest.instagramHandle || null,
+    facebookHandle: rest.facebookHandle || null,
+    vendorType: rest.vendorType,
+    businessDescription: rest.businessDescription || null,
+    onlineOrdersEnabled: rest.onlineOrdersEnabled,
+  }
+
+  if (portalPassword) {
+    data.hashedPassword = await bcrypt.hash(portalPassword, 10)
+  }
+
+  await prisma.vendor.update({ where: { id }, data })
   revalidatePath('/admin/vendors')
   redirect('/admin/vendors')
+}
+
+export async function clearVendorReview(vendorId: string) {
+  await prisma.vendor.update({
+    where: { id: vendorId },
+    data: { needsReview: false },
+  })
+  revalidatePath('/admin/vendors')
 }

@@ -31,6 +31,7 @@ const vendorSchema = z.object({
   vendorType: z.string().min(1, 'Vendor type is required'),
   businessDescription: z.string().optional(),
   onlineOrdersEnabled: z.boolean(),
+  portalPassword: z.string().min(6, 'Password must be at least 6 characters').optional().or(z.literal('')),
 })
 
 type VendorFormValues = z.infer<typeof vendorSchema>
@@ -63,6 +64,7 @@ export default function NewVendorPage() {
       vendorType: 'certified_farmer',
       businessDescription: '',
       onlineOrdersEnabled: false,
+      portalPassword: '',
     },
   })
 
@@ -262,6 +264,27 @@ export default function NewVendorPage() {
               Online Orders Enabled
             </Label>
           </div>
+        </div>
+
+        <Separator />
+
+        {/* Vendor Portal Access */}
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Vendor Portal Access</h3>
+
+        <div className="space-y-2">
+          <Label htmlFor="portalPassword">Portal Password</Label>
+          <Input
+            id="portalPassword"
+            type="password"
+            placeholder="Set a password to enable vendor portal login"
+            {...register('portalPassword')}
+          />
+          {errors.portalPassword && (
+            <p className="text-sm text-destructive">{errors.portalPassword.message}</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Leave blank to skip portal access. The vendor will log in with their email and this password.
+          </p>
         </div>
 
         <Separator />

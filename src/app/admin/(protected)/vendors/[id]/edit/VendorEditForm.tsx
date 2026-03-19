@@ -31,6 +31,7 @@ const vendorSchema = z.object({
   vendorType: z.string().min(1, 'Vendor type is required'),
   businessDescription: z.string().optional(),
   onlineOrdersEnabled: z.boolean(),
+  portalPassword: z.string().min(6, 'Password must be at least 6 characters').optional().or(z.literal('')),
 })
 
 type VendorFormValues = z.infer<typeof vendorSchema>
@@ -52,6 +53,7 @@ interface VendorEditFormProps {
     vendorType: string
     businessDescription: string | null
     onlineOrdersEnabled: boolean
+    hashedPassword: string | null
   }
 }
 
@@ -83,6 +85,7 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
       vendorType: vendor.vendorType,
       businessDescription: vendor.businessDescription || '',
       onlineOrdersEnabled: vendor.onlineOrdersEnabled,
+      portalPassword: '',
     },
   })
 
@@ -282,6 +285,31 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
               Online Orders Enabled
             </Label>
           </div>
+        </div>
+
+        <Separator />
+
+        {/* Vendor Portal Access */}
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Vendor Portal Access</h3>
+
+        <div className="space-y-2">
+          <Label htmlFor="portalPassword">
+            {vendor.hashedPassword ? 'Change Portal Password' : 'Set Portal Password'}
+          </Label>
+          <Input
+            id="portalPassword"
+            type="password"
+            placeholder={vendor.hashedPassword ? 'Leave blank to keep current password' : 'Set a password to enable vendor portal login'}
+            {...register('portalPassword')}
+          />
+          {errors.portalPassword && (
+            <p className="text-sm text-destructive">{errors.portalPassword.message}</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            {vendor.hashedPassword
+              ? 'Portal access is enabled. Leave blank to keep the current password.'
+              : 'Set a password to enable this vendor to log in to the vendor portal.'}
+          </p>
         </div>
 
         <Separator />

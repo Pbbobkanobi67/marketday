@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { categoryLabel, categoryColor, vendorTypeLabel, vendorTypeColor, cn } from '@/lib/utils'
-import { Plus, Pencil, ExternalLink } from 'lucide-react'
+import { Plus, Pencil, ExternalLink, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -66,7 +66,17 @@ export default async function AdminVendorsPage() {
           <TableBody>
             {vendors.map((vendor) => (
               <TableRow key={vendor.id}>
-                <TableCell className="font-medium">{vendor.name}</TableCell>
+                <TableCell className="font-medium">
+                  <span className="flex items-center gap-1.5">
+                    {vendor.name}
+                    {vendor.needsReview && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                        <AlertCircle className="h-3 w-3" />
+                        Review
+                      </span>
+                    )}
+                  </span>
+                </TableCell>
                 <TableCell>
                   <span
                     className={cn(

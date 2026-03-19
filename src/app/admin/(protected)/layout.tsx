@@ -10,6 +10,7 @@ export default async function AdminLayout({
 }) {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/admin/login')
+  if (session.user.role === 'vendor') redirect('/vendor/dashboard')
 
   return (
     <div className="min-h-screen bg-market-cream">

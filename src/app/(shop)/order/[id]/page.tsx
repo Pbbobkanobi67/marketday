@@ -23,7 +23,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function OrderConfirmationPage({ params, searchParams }: Props) {
   const order = await prisma.order.findUnique({
     where: { id: params.id },
-    include: { items: true, market: true },
+    include: {
+      items: {
+        include: {
+          vendor: {
+            select: {
+              id: true,
+              name: true,
+              venmoQrUrl: true,
+              paypalQrUrl: true,
+              zelleQrUrl: true,
+            },
+          },
+        },
+      },
+      market: true,
+    },
   })
 
   if (!order) notFound()
@@ -112,6 +127,54 @@ export default async function OrderConfirmationPage({ params, searchParams }: Pr
             </p>
           </div>
         )}
+
+        {/* Vendor payment QR codes for AT_MARKET orders */}
+        {order.paymentMethod === 'AT_MARKET' && (() => {
+          const vendorsWithQr = new Map<string, { name: string; venmoQrUrl: string | null; paypalQrUrl: string | null; zelleQrUrl: string | null }>()
+          for (const item of order.items) {
+            if (item.vendor && (item.vendor.venmoQrUrl || item.vendor.paypalQrUrl || item.vendor.zelleQrUrl)) {
+              vendorsWithQr.set(item.vendor.id, item.vendor)
+            }
+          }
+          if (vendorsWithQr.size === 0) return null
+          return (
+            <div className="card-market p-5 mb-6">
+              <h2 className="font-display text-lg font-semibold text-market-soil mb-4">
+                Vendor Payment Options
+              </h2>
+              <p className="text-xs text-muted-foreground mb-4">
+                You can also pay these vendors directly using their QR codes.
+              </p>
+              <div className="space-y-6">
+                {Array.from(vendorsWithQr.values()).map((vendor) => (
+                  <div key={vendor.name}>
+                    <p className="text-sm font-semibold text-market-soil mb-2">{vendor.name}</p>
+                    <div className="flex flex-wrap gap-4">
+                      {vendor.venmoQrUrl && (
+                        <div className="text-center">
+                          <img src={vendor.venmoQrUrl} alt={`${vendor.name} Venmo`} className="rounded-lg w-24 h-24 object-contain" />
+                          <p className="text-[10px] text-muted-foreground mt-1">Venmo</p>
+                        </div>
+                      )}
+                      {vendor.paypalQrUrl && (
+                        <div className="text-center">
+                          <img src={vendor.paypalQrUrl} alt={`${vendor.name} PayPal`} className="rounded-lg w-24 h-24 object-contain" />
+                          <p className="text-[10px] text-muted-foreground mt-1">PayPal</p>
+                        </div>
+                      )}
+                      {vendor.zelleQrUrl && (
+                        <div className="text-center">
+                          <img src={vendor.zelleQrUrl} alt={`${vendor.name} Zelle`} className="rounded-lg w-24 h-24 object-contain" />
+                          <p className="text-[10px] text-muted-foreground mt-1">Zelle</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Items grouped by vendor */}
         <div className="card-market p-5 mb-6">

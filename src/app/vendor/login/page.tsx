@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import { Loader2 } from 'lucide-react'
 
-export default function AdminLoginPage() {
+export default function VendorLoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
     setLoading(true)
 
     try {
-      const result = await signIn('admin-credentials', {
+      const result = await signIn('vendor-credentials', {
         email,
         password,
         redirect: false,
@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
       if (result?.error) {
         setError('Invalid email or password. Please try again.')
       } else if (result?.ok) {
-        router.push('/admin/dashboard')
+        router.push('/vendor/dashboard')
       }
     } catch {
       setError('An unexpected error occurred. Please try again.')
@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
           <h1 className="font-display text-2xl text-market-sage font-bold">
             Backroads
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Admin Portal</p>
+          <p className="text-sm text-muted-foreground mt-1">Vendor Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@backroadsmarket.com"
+              placeholder="vendor@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

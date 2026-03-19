@@ -43,7 +43,7 @@ model Vendor {
   category            String
   isActive            Boolean        @default(true)
   contactPerson       String?
-  email               String?
+  email               String?        @unique
   phone               String?
   website             String?
   instagramHandle     String?
@@ -53,6 +53,14 @@ model Vendor {
   boothImageUrl       String?
   signupDate          DateTime?
   onlineOrdersEnabled Boolean        @default(false)
+  hashedPassword      String?
+  needsReview         Boolean        @default(false)
+  venmoQrUrl          String?
+  paypalQrUrl         String?
+  zelleQrUrl          String?
+  productImage1Url    String?
+  productImage2Url    String?
+  productImage3Url    String?
   products            Product[]
   orderItems          OrderItem[]
   markets             MarketVendor[]

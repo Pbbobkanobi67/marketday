@@ -33,6 +33,7 @@ export default async function EditVendorPage({
         vendorType: vendor.vendorType,
         businessDescription: vendor.businessDescription,
         onlineOrdersEnabled: vendor.onlineOrdersEnabled,
+        hashedPassword: vendor.hashedPassword,
       }}
     />
   )

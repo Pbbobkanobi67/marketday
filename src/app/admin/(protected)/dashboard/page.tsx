@@ -22,6 +22,7 @@ import {
   MapPin,
   Clock,
   ArrowRight,
+  AlertCircle,
 } from 'lucide-react'
 
 function getGreeting(): string {
@@ -42,7 +43,7 @@ export default async function AdminDashboardPage() {
     orderBy: { date: 'asc' },
   })
 
-  const [totalOrders, paidRevenue, vendorCount, productCount] =
+  const [totalOrders, paidRevenue, vendorCount, productCount, reviewCount] =
     await Promise.all([
       prisma.order.count({
         where: nextMarket ? { marketId: nextMarket.id } : {},
@@ -53,6 +54,7 @@ export default async function AdminDashboardPage() {
       }),
       prisma.vendor.count({ where: { isActive: true } }),
       prisma.product.count({ where: { isAvailable: true } }),
+      prisma.vendor.count({ where: { needsReview: true } }),
     ])
 
   const recentOrders = await prisma.order.findMany({
@@ -102,6 +104,14 @@ export default async function AdminDashboardPage() {
           subtitle="In stock"
           icon={<Package className="size-5" />}
         />
+        {reviewCount > 0 && (
+          <StatCard
+            title="Needs Review"
+            value={reviewCount}
+            subtitle="Vendor profile edits"
+            icon={<AlertCircle className="size-5" />}
+          />
+        )}
       </div>
 
       {/* Next Market card */}

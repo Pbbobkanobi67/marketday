@@ -191,6 +191,56 @@ export default async function VendorDetailPage({ params }: Props) {
         </div>
       )}
 
+      {/* Product Gallery */}
+      {(vendor.productImage1Url || vendor.productImage2Url || vendor.productImage3Url) && (
+        <div className="mb-10">
+          <h2 className="font-display text-xl font-semibold text-market-soil mb-4">
+            Gallery
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {[vendor.productImage1Url, vendor.productImage2Url, vendor.productImage3Url]
+              .filter(Boolean)
+              .map((url, i) => (
+                <img
+                  key={i}
+                  src={url!}
+                  alt={`${vendor.name} product ${i + 1}`}
+                  className="rounded-lg object-cover w-full aspect-square"
+                />
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* Payment Methods */}
+      {(vendor.venmoQrUrl || vendor.paypalQrUrl || vendor.zelleQrUrl) && (
+        <div className="card-market p-5 mb-10">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+            Payment Methods
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {vendor.venmoQrUrl && (
+              <div className="text-center">
+                <img src={vendor.venmoQrUrl} alt="Venmo QR Code" className="rounded-lg w-full max-w-[160px] mx-auto" />
+                <p className="text-xs text-muted-foreground mt-1">Venmo</p>
+              </div>
+            )}
+            {vendor.paypalQrUrl && (
+              <div className="text-center">
+                <img src={vendor.paypalQrUrl} alt="PayPal QR Code" className="rounded-lg w-full max-w-[160px] mx-auto" />
+                <p className="text-xs text-muted-foreground mt-1">PayPal</p>
+              </div>
+            )}
+            {vendor.zelleQrUrl && (
+              <div className="text-center">
+                <img src={vendor.zelleQrUrl} alt="Zelle QR Code" className="rounded-lg w-full max-w-[160px] mx-auto" />
+                <p className="text-xs text-muted-foreground mt-1">Zelle</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Products section */}
       {vendor.onlineOrdersEnabled ? (
         <div className="mb-10">
