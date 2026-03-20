@@ -532,16 +532,22 @@ async function main() {
         category: v.category,
         vendorType: v.vendorType,
         isActive: true,
-        onlineOrdersEnabled: false,
+        onlineOrdersEnabled: true,
+        email: v.name.toLowerCase().includes('light by dawn')
+          ? 'vendor@gmail.com'
+          : `${slug}@test.com`,
+        hashedPassword: await bcrypt.hash('vendor2026', 10),
       },
     })
   }
-  console.log(`  ${vendors.length} vendors created (no products — vendors add via portal)`)
+  console.log(`  ${vendors.length} vendors created (all enabled for testing)`)
 
   console.log(`\nSeed complete! ${vendors.length} real vendors loaded.`)
   console.log('   Admin logins:')
   console.log('   marci@backroadsmarket.com / marci2026')
   console.log('   jessica@backroadsmarket.com / jessica2026')
+  console.log('   Vendor login (Light By Dawn): vendor@gmail.com / vendor2026')
+  console.log('   All vendors share password: vendor2026')
 }
 
 main()

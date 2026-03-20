@@ -27,7 +27,9 @@ export default async function VendorDashboardPage() {
 
   if (!vendor) redirect('/vendor/login')
 
-  const firstName = vendor.name.split(/\s+/)[0]
+  const firstName = vendor.displayName
+    || (vendor.contactPerson ? vendor.contactPerson.split(/\s+/)[0] : null)
+    || vendor.name.split(/\s+/)[0]
 
   return (
     <div className="space-y-8">

@@ -9,6 +9,7 @@ import { logVendorChange } from '@/lib/changelog'
 
 export async function updateVendorProfile(formData: {
   name: string
+  displayName?: string
   description: string
   businessDescription?: string
   contactPerson?: string
@@ -26,13 +27,14 @@ export async function updateVendorProfile(formData: {
 
   const vendor = await prisma.vendor.findUnique({
     where: { id: session.user.vendorId },
-    select: { name: true, description: true, contactPerson: true, email: true, phone: true, website: true, instagramHandle: true, facebookHandle: true, businessDescription: true, vendorNotes: true },
+    select: { name: true, displayName: true, description: true, contactPerson: true, email: true, phone: true, website: true, instagramHandle: true, facebookHandle: true, businessDescription: true, vendorNotes: true },
   })
 
   await prisma.vendor.update({
     where: { id: session.user.vendorId },
     data: {
       name: formData.name,
+      displayName: formData.displayName || null,
       description: formData.description,
       businessDescription: formData.businessDescription || null,
       contactPerson: formData.contactPerson || null,
@@ -49,6 +51,7 @@ export async function updateVendorProfile(formData: {
   const changed: string[] = []
   if (vendor) {
     if (vendor.name !== formData.name) changed.push('name')
+    if ((vendor.displayName || '') !== (formData.displayName || '')) changed.push('displayName')
     if (vendor.description !== formData.description) changed.push('description')
     if ((vendor.contactPerson || '') !== (formData.contactPerson || '')) changed.push('contactPerson')
     if ((vendor.email || '') !== (formData.email || '')) changed.push('email')

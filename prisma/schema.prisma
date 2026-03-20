@@ -38,6 +38,7 @@ model Market {
 model Vendor {
   id                  String         @id @default(cuid())
   name                String
+  displayName         String?
   slug                String         @unique
   description         String
   logoUrl             String?

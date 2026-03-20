@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator'
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Name is required'),
+  displayName: z.string().optional(),
   description: z.string().min(1, 'Description is required'),
   businessDescription: z.string().optional(),
   contactPerson: z.string().optional(),
@@ -30,6 +31,7 @@ type ProfileFormValues = z.infer<typeof profileSchema>
 interface VendorProfileFormProps {
   vendor: {
     name: string
+    displayName: string | null
     description: string
     businessDescription: string | null
     contactPerson: string | null
@@ -59,6 +61,7 @@ export function VendorProfileForm({ vendor }: VendorProfileFormProps) {
     resolver: standardSchemaResolver(profileSchema),
     defaultValues: {
       name: vendor.name,
+      displayName: vendor.displayName || '',
       description: vendor.description,
       businessDescription: vendor.businessDescription || '',
       contactPerson: vendor.contactPerson || '',
@@ -125,6 +128,18 @@ export function VendorProfileForm({ vendor }: VendorProfileFormProps) {
           {errors.name && (
             <p className="text-sm text-destructive">{errors.name.message}</p>
           )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="displayName">Display Name</Label>
+          <Input
+            id="displayName"
+            placeholder="e.g. Dawn"
+            {...register('displayName')}
+          />
+          <p className="text-xs text-muted-foreground">
+            How you want to be greeted on your dashboard (e.g. your first name). Leave blank to use your contact name.
+          </p>
         </div>
 
         <div className="space-y-2">

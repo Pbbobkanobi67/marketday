@@ -13,6 +13,7 @@ export default async function VendorProfilePage() {
     where: { id: session.user.vendorId },
     select: {
       name: true,
+      displayName: true,
       description: true,
       businessDescription: true,
       contactPerson: true,
