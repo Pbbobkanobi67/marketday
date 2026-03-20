@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
   try {
     const blob = await put(file.name, file, {
       access: 'public',
+      allowPublicAccess: true,
       token: process.env.BLOB_READ_WRITE_TOKEN,
     })
 
