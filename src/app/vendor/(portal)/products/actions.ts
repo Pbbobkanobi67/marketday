@@ -23,6 +23,8 @@ export async function createVendorProduct(formData: {
   unit: string
   category: string
   isAvailable: boolean
+  quantity: number
+  imageUrl: string | null
 }) {
   const vendorId = await getVendorId()
 
@@ -47,6 +49,8 @@ export async function updateVendorProduct(
     unit: string
     category: string
     isAvailable: boolean
+    quantity: number
+    imageUrl: string | null
   }
 ) {
   const vendorId = await getVendorId()

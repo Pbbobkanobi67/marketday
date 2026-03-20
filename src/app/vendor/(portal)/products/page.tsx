@@ -85,9 +85,11 @@ export default async function VendorProductsPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12"></TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Unit</TableHead>
+              <TableHead className="text-center">Qty</TableHead>
               <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -95,11 +97,25 @@ export default async function VendorProductsPage() {
           <TableBody>
             {products.map((product) => (
               <TableRow key={product.id}>
+                <TableCell>
+                  {product.imageUrl ? (
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="h-8 w-8 rounded object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded bg-muted" />
+                  )}
+                </TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell className="font-mono">
                   {formatPrice(product.price)}
                 </TableCell>
                 <TableCell>{product.unit}</TableCell>
+                <TableCell className="text-center font-mono text-sm">
+                  {product.quantity}
+                </TableCell>
                 <TableCell className="text-center">
                   <span className="inline-flex items-center gap-1.5 text-xs">
                     <span

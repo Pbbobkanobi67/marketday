@@ -15,8 +15,26 @@ export async function GET() {
       venmoQrUrl: true,
       paypalQrUrl: true,
       zelleQrUrl: true,
+      gpayQrUrl: true,
+      applePayQrUrl: true,
+      venmoLink: true,
+      paypalLink: true,
+      zelleLink: true,
+      gpayLink: true,
+      applePayLink: true,
     },
   })
 
-  return NextResponse.json(vendor || { venmoQrUrl: null, paypalQrUrl: null, zelleQrUrl: null })
+  return NextResponse.json(vendor || {
+    venmoQrUrl: null,
+    paypalQrUrl: null,
+    zelleQrUrl: null,
+    gpayQrUrl: null,
+    applePayQrUrl: null,
+    venmoLink: null,
+    paypalLink: null,
+    zelleLink: null,
+    gpayLink: null,
+    applePayLink: null,
+  })
 }

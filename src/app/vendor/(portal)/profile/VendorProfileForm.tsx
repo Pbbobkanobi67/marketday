@@ -22,6 +22,7 @@ const profileSchema = z.object({
   website: z.string().optional(),
   instagramHandle: z.string().optional(),
   facebookHandle: z.string().optional(),
+  vendorNotes: z.string().optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
@@ -37,6 +38,7 @@ interface VendorProfileFormProps {
     website: string | null
     instagramHandle: string | null
     facebookHandle: string | null
+    vendorNotes: string | null
   }
 }
 
@@ -65,6 +67,7 @@ export function VendorProfileForm({ vendor }: VendorProfileFormProps) {
       website: vendor.website || '',
       instagramHandle: vendor.instagramHandle || '',
       facebookHandle: vendor.facebookHandle || '',
+      vendorNotes: vendor.vendorNotes || '',
     },
   })
 
@@ -187,6 +190,25 @@ export function VendorProfileForm({ vendor }: VendorProfileFormProps) {
             <Label htmlFor="facebookHandle">Facebook</Label>
             <Input id="facebookHandle" {...register('facebookHandle')} />
           </div>
+        </div>
+
+        <Separator />
+
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          Private Notes
+        </h3>
+
+        <div className="space-y-2">
+          <Label htmlFor="vendorNotes">Your Notes</Label>
+          <Textarea
+            id="vendorNotes"
+            rows={4}
+            placeholder="Private notes for your own reference..."
+            {...register('vendorNotes')}
+          />
+          <p className="text-xs text-muted-foreground">
+            These notes are private and only visible to you.
+          </p>
         </div>
 
         <div className="flex items-center gap-3">

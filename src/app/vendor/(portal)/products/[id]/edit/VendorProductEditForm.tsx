@@ -3,11 +3,12 @@
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { generateSlug } from '@/lib/utils'
 import { MARKET_CONFIG } from '@/config/market.config'
 import { updateVendorProduct } from '../../actions'
+import { ImageUpload } from '@/components/shared/ImageUpload'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -31,6 +32,7 @@ const productSchema = z.object({
   slug: z.string().min(1, 'Slug is required'),
   description: z.string().min(1, 'Description is required'),
   price: z.string().min(1, 'Price is required'),
+  quantity: z.string().optional(),
   unit: z.string().min(1, 'Unit is required'),
   category: z.string().min(1, 'Category is required'),
   isAvailable: z.boolean(),
@@ -45,14 +47,17 @@ interface VendorProductEditFormProps {
     slug: string
     description: string
     price: number
+    quantity: number
     unit: string
     category: string
     isAvailable: boolean
+    imageUrl: string | null
   }
 }
 
 export function VendorProductEditForm({ product }: VendorProductEditFormProps) {
   const [isPending, startTransition] = useTransition()
+  const [imageUrl, setImageUrl] = useState<string | null>(product.imageUrl)
 
   const {
     register,
@@ -67,6 +72,7 @@ export function VendorProductEditForm({ product }: VendorProductEditFormProps) {
       slug: product.slug,
       description: product.description,
       price: (product.price / 100).toFixed(2),
+      quantity: product.quantity.toString(),
       unit: product.unit,
       category: product.category,
       isAvailable: product.isAvailable,
@@ -83,15 +89,18 @@ export function VendorProductEditForm({ product }: VendorProductEditFormProps) {
 
   function onSubmit(data: ProductFormValues) {
     const priceInCents = Math.round(parseFloat(data.price) * 100)
+    const qty = parseInt(data.quantity || '0', 10) || 0
     startTransition(async () => {
       await updateVendorProduct(product.id, {
         name: data.name,
         slug: data.slug,
         description: data.description,
         price: priceInCents,
+        quantity: qty,
         unit: data.unit,
         category: data.category,
         isAvailable: data.isAvailable,
+        imageUrl,
       })
     })
   }
@@ -108,6 +117,8 @@ export function VendorProductEditForm({ product }: VendorProductEditFormProps) {
       <Separator />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <ImageUpload label="Product Image" value={imageUrl} onChange={setImageUrl} />
+
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input
@@ -146,7 +157,7 @@ export function VendorProductEditForm({ product }: VendorProductEditFormProps) {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="price">Price (USD)</Label>
             <Input
@@ -180,6 +191,16 @@ export function VendorProductEditForm({ product }: VendorProductEditFormProps) {
             {errors.unit && (
               <p className="text-sm text-destructive">{errors.unit.message}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="quantity">Quantity</Label>
+            <Input
+              id="quantity"
+              type="number"
+              min="0"
+              {...register('quantity')}
+            />
           </div>
         </div>
 

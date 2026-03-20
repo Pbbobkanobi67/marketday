@@ -9,7 +9,9 @@ import {
   User,
   ImageIcon,
   Package,
+  CalendarDays,
   CreditCard,
+  FileText,
   LogOut,
   Menu,
   X,
@@ -33,7 +35,9 @@ const getNavLinks = (onlineOrdersEnabled: boolean) => [
   ...(onlineOrdersEnabled
     ? [{ href: '/vendor/products', label: 'Products', icon: Package }]
     : []),
+  { href: '/vendor/schedule', label: 'Schedule', icon: CalendarDays },
   { href: '/vendor/payment', label: 'Payment', icon: CreditCard },
+  { href: '/vendor/documents', label: 'Documents', icon: FileText },
 ]
 
 export default function VendorNav({ session, onlineOrdersEnabled }: VendorNavProps) {

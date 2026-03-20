@@ -66,6 +66,40 @@ export const MARKET_CONFIG = {
     { value: 'SATURDAY_MARKET', label: 'Saturday Market' },
     { value: 'PICKUP_EVENT', label: 'Pickup Event' },
   ],
+
+  // --- Vendor Documents ----------------------------------
+  documents: [
+    {
+      id: 'market-rules',
+      title: 'Market Rules & Regulations',
+      description: 'General rules, code of conduct, and expectations for all vendors participating in the market.',
+      category: 'rules',
+    },
+    {
+      id: 'vendor-agreement',
+      title: 'Vendor Agreement',
+      description: 'The vendor participation agreement outlining terms, responsibilities, and market policies.',
+      category: 'agreement',
+    },
+    {
+      id: 'food-safety',
+      title: 'Food Safety Guidelines',
+      description: 'Food handling requirements, temperature guidelines, and health department compliance information.',
+      category: 'safety',
+    },
+    {
+      id: 'insurance-requirements',
+      title: 'Insurance Requirements',
+      description: 'Liability insurance requirements and proof of coverage needed to participate as a vendor.',
+      category: 'insurance',
+    },
+    {
+      id: 'booth-setup',
+      title: 'Booth Setup Guide',
+      description: 'Guidelines for booth setup, teardown, signage, and display standards at the market.',
+      category: 'setup',
+    },
+  ],
 } as const
 
 export type CategoryValue = (typeof MARKET_CONFIG.categories)[number]['value']

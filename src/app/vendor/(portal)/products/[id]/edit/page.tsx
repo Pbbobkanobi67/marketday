@@ -18,5 +18,20 @@ export default async function VendorEditProductPage({ params }: Props) {
 
   if (!product || product.vendorId !== session.user.vendorId) notFound()
 
-  return <VendorProductEditForm product={product} />
+  return (
+    <VendorProductEditForm
+      product={{
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        description: product.description,
+        price: product.price,
+        quantity: product.quantity,
+        unit: product.unit,
+        category: product.category,
+        isAvailable: product.isAvailable,
+        imageUrl: product.imageUrl,
+      }}
+    />
+  )
 }

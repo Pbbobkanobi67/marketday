@@ -21,6 +21,7 @@ export default async function VendorProfilePage() {
       website: true,
       instagramHandle: true,
       facebookHandle: true,
+      vendorNotes: true,
     },
   })
 

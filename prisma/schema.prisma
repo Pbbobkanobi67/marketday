@@ -28,10 +28,11 @@ model Market {
   description String?
   type        String         @default("SATURDAY_MARKET")
   status      String         @default("UPCOMING")
-  orders      Order[]
-  vendors     MarketVendor[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  orders       Order[]
+  vendors      MarketVendor[]
+  availability VendorAvailability[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 model Vendor {
@@ -58,6 +59,15 @@ model Vendor {
   venmoQrUrl          String?
   paypalQrUrl         String?
   zelleQrUrl          String?
+  gpayQrUrl           String?
+  applePayQrUrl       String?
+  venmoLink           String?
+  paypalLink          String?
+  zelleLink           String?
+  gpayLink            String?
+  applePayLink        String?
+  vendorNotes         String?
+  onlineOrdersRequested Boolean @default(false)
   productImage1Url    String?
   productImage2Url    String?
   productImage3Url    String?
@@ -67,6 +77,7 @@ model Vendor {
   orderItems          OrderItem[]
   markets             MarketVendor[]
   changeLogs          VendorChangeLog[]
+  availability        VendorAvailability[]
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 }
@@ -132,6 +143,7 @@ model Product {
   imageUrl    String?
   unit        String
   category    String
+  quantity    Int         @default(0)
   isAvailable Boolean     @default(true)
   vendorId    String
   vendor      Vendor      @relation(fields: [vendorId], references: [id], onDelete: Cascade)
@@ -172,4 +184,18 @@ model OrderItem {
   priceAtTime Int
   productName String
   vendorName  String
+}
+
+model VendorAvailability {
+  id        String   @id @default(cuid())
+  vendorId  String
+  vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  marketId  String
+  market    Market   @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  status    String   // SUBSTITUTE or UNAVAILABLE
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([vendorId, marketId])
 }

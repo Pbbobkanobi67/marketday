@@ -17,6 +17,7 @@ export async function updateVendorProfile(formData: {
   website?: string
   instagramHandle?: string
   facebookHandle?: string
+  vendorNotes?: string
 }) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== 'vendor' || !session.user.vendorId) {
@@ -25,7 +26,7 @@ export async function updateVendorProfile(formData: {
 
   const vendor = await prisma.vendor.findUnique({
     where: { id: session.user.vendorId },
-    select: { name: true, description: true, contactPerson: true, email: true, phone: true, website: true, instagramHandle: true, facebookHandle: true, businessDescription: true },
+    select: { name: true, description: true, contactPerson: true, email: true, phone: true, website: true, instagramHandle: true, facebookHandle: true, businessDescription: true, vendorNotes: true },
   })
 
   await prisma.vendor.update({
@@ -40,6 +41,7 @@ export async function updateVendorProfile(formData: {
       website: formData.website || null,
       instagramHandle: formData.instagramHandle || null,
       facebookHandle: formData.facebookHandle || null,
+      vendorNotes: formData.vendorNotes || null,
       needsReview: true,
     },
   })
@@ -55,6 +57,7 @@ export async function updateVendorProfile(formData: {
     if ((vendor.instagramHandle || '') !== (formData.instagramHandle || '')) changed.push('instagram')
     if ((vendor.facebookHandle || '') !== (formData.facebookHandle || '')) changed.push('facebook')
     if ((vendor.businessDescription || '') !== (formData.businessDescription || '')) changed.push('businessDescription')
+    if ((vendor.vendorNotes || '') !== (formData.vendorNotes || '')) changed.push('notes')
   }
   const summary = changed.length > 0 ? `Updated ${changed.join(', ')}` : 'Profile saved (no changes)'
   await logVendorChange(session.user.vendorId, 'PROFILE_UPDATE', 'vendor', summary)

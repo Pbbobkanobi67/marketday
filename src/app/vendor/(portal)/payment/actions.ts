@@ -10,6 +10,13 @@ export async function updateVendorPayment(formData: {
   venmoQrUrl: string | null
   paypalQrUrl: string | null
   zelleQrUrl: string | null
+  gpayQrUrl: string | null
+  applePayQrUrl: string | null
+  venmoLink: string | null
+  paypalLink: string | null
+  zelleLink: string | null
+  gpayLink: string | null
+  applePayLink: string | null
 }) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== 'vendor' || !session.user.vendorId) {
@@ -22,18 +29,27 @@ export async function updateVendorPayment(formData: {
       venmoQrUrl: formData.venmoQrUrl,
       paypalQrUrl: formData.paypalQrUrl,
       zelleQrUrl: formData.zelleQrUrl,
+      gpayQrUrl: formData.gpayQrUrl,
+      applePayQrUrl: formData.applePayQrUrl,
+      venmoLink: formData.venmoLink || null,
+      paypalLink: formData.paypalLink || null,
+      zelleLink: formData.zelleLink || null,
+      gpayLink: formData.gpayLink || null,
+      applePayLink: formData.applePayLink || null,
     },
   })
 
   const methods: string[] = []
-  if (formData.venmoQrUrl) methods.push('Venmo')
-  if (formData.paypalQrUrl) methods.push('PayPal')
-  if (formData.zelleQrUrl) methods.push('Zelle')
+  if (formData.venmoQrUrl || formData.venmoLink) methods.push('Venmo')
+  if (formData.paypalQrUrl || formData.paypalLink) methods.push('PayPal')
+  if (formData.zelleQrUrl || formData.zelleLink) methods.push('Zelle')
+  if (formData.gpayQrUrl || formData.gpayLink) methods.push('Google Pay')
+  if (formData.applePayQrUrl || formData.applePayLink) methods.push('Apple Pay')
   await logVendorChange(
     session.user.vendorId,
     'PAYMENT_UPDATE',
     'vendor',
-    methods.length > 0 ? `Updated payment QR: ${methods.join(', ')}` : 'Cleared all payment QR codes'
+    methods.length > 0 ? `Updated payment methods: ${methods.join(', ')}` : 'Cleared all payment methods'
   )
 
   revalidatePath('/vendor/payment')
