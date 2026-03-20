@@ -33,10 +33,10 @@ export function truncate(str: string, length: number): string {
 export function categoryLabel(value: string): string {
   const map: Record<string, string> = {
     certified_farmer: 'Certified Farmer',
-    artisan_craft: 'Artisan Craft',
+    artisan_craft: 'Artisan & Craft',
     hot_food: 'Hot Food',
     baked: 'Baked Goods',
-    specialty: 'Specialty Foods',
+    specialty: 'Specialty Food',
     nonprofit: 'Nonprofit',
   }
   return map[value] || value
@@ -57,8 +57,8 @@ export function categoryColor(value: string): string {
 export function vendorTypeLabel(value: string): string {
   const map: Record<string, string> = {
     certified_farmer: 'Certified Farmer',
-    artisan_craft: 'Artisan / Craft',
-    hot_food: 'Hot Food Vendor',
+    artisan_craft: 'Artisan & Craft',
+    hot_food: 'Hot Food',
     baked_goods: 'Baked Goods',
     specialty_food: 'Specialty Food',
     nonprofit: 'Nonprofit',
@@ -68,12 +68,12 @@ export function vendorTypeLabel(value: string): string {
 
 export function vendorTypeColor(value: string): string {
   const map: Record<string, string> = {
-    certified_farmer: 'bg-green-100 text-green-800',
-    artisan_craft: 'bg-violet-100 text-violet-800',
-    hot_food: 'bg-orange-100 text-orange-800',
+    certified_farmer: 'bg-emerald-100 text-emerald-800',
+    artisan_craft: 'bg-indigo-100 text-indigo-800',
+    hot_food: 'bg-red-100 text-red-800',
     baked_goods: 'bg-amber-100 text-amber-800',
-    specialty_food: 'bg-purple-100 text-purple-800',
-    nonprofit: 'bg-yellow-100 text-yellow-800',
+    specialty_food: 'bg-teal-100 text-teal-800',
+    nonprofit: 'bg-sky-100 text-sky-800',
   }
   return map[value] || 'bg-gray-100 text-gray-800'
 }

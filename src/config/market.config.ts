@@ -41,21 +41,21 @@ export const MARKET_CONFIG = {
   enableReservePayAtMarket: true,
   enableVendorDirectory: true,
 
-  // --- Categories ----------------------------------------
+  // --- Categories (product-level grouping) ----------------
   categories: [
     { value: 'certified_farmer', label: 'Certified Farmer', emoji: '🌾' },
-    { value: 'artisan_craft', label: 'Artisan Craft', emoji: '🎨' },
+    { value: 'artisan_craft', label: 'Artisan & Craft', emoji: '🎨' },
     { value: 'hot_food', label: 'Hot Food', emoji: '🍲' },
     { value: 'baked', label: 'Baked Goods', emoji: '🍞' },
-    { value: 'specialty', label: 'Specialty Foods', emoji: '🫙' },
+    { value: 'specialty', label: 'Specialty Food', emoji: '🫙' },
     { value: 'nonprofit', label: 'Nonprofit', emoji: '💛' },
   ],
 
-  // --- Vendor Types --------------------------------------
+  // --- Vendor Types (vendor-level classification) --------
   vendorTypes: [
     { value: 'certified_farmer', label: 'Certified Farmer' },
-    { value: 'artisan_craft', label: 'Artisan / Craft' },
-    { value: 'hot_food', label: 'Hot Food Vendor' },
+    { value: 'artisan_craft', label: 'Artisan & Craft' },
+    { value: 'hot_food', label: 'Hot Food' },
     { value: 'baked_goods', label: 'Baked Goods' },
     { value: 'specialty_food', label: 'Specialty Food' },
     { value: 'nonprofit', label: 'Nonprofit' },

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { categoryLabel, categoryColor, vendorTypeLabel, vendorTypeColor, cn } from '@/lib/utils'
+import { vendorTypeLabel, vendorTypeColor, cn } from '@/lib/utils'
 
 type VendorCardProps = {
   vendor: {
@@ -49,16 +49,8 @@ export default function VendorCard({ vendor }: VendorCardProps) {
             {vendor.name}
           </h3>
 
-          {/* Badges */}
+          {/* Badge */}
           <div className="flex flex-wrap gap-1.5 mt-1.5">
-            <span
-              className={cn(
-                'inline-block text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full',
-                categoryColor(vendor.category)
-              )}
-            >
-              {categoryLabel(vendor.category)}
-            </span>
             {vendor.vendorType && (
               <span
                 className={cn(

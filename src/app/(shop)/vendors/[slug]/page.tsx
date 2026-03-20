@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ProductCard from '@/components/shop/ProductCard'
-import { categoryLabel, categoryColor, vendorTypeLabel, vendorTypeColor, formatMarketDate, cn } from '@/lib/utils'
+import { vendorTypeLabel, vendorTypeColor, formatMarketDate, cn } from '@/lib/utils'
 import { Globe, Mail, Phone, Instagram, Facebook } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -97,14 +97,6 @@ export default async function VendorDetailPage({ params }: Props) {
           </h1>
 
           <div className="flex flex-wrap gap-2 mb-4">
-            <span
-              className={cn(
-                'inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full',
-                categoryColor(vendor.category)
-              )}
-            >
-              {categoryLabel(vendor.category)}
-            </span>
             <span
               className={cn(
                 'inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full',
