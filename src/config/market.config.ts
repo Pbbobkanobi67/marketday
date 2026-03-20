@@ -61,6 +61,15 @@ export const MARKET_CONFIG = {
     { value: 'nonprofit', label: 'Nonprofit' },
   ],
 
+  // --- Units (product pricing) ----------------------------
+  units: [
+    { value: 'each', label: 'Each' },
+    { value: 'lb', label: 'Per Pound (lb)' },
+    { value: 'bunch', label: 'Bunch' },
+    { value: 'loaf', label: 'Loaf' },
+    { value: 'jar', label: 'Jar' },
+  ],
+
   // --- Market Types --------------------------------------
   marketTypes: [
     { value: 'SATURDAY_MARKET', label: 'Saturday Market' },
@@ -105,3 +114,4 @@ export const MARKET_CONFIG = {
 export type CategoryValue = (typeof MARKET_CONFIG.categories)[number]['value']
 export type VendorTypeValue = (typeof MARKET_CONFIG.vendorTypes)[number]['value']
 export type MarketTypeValue = (typeof MARKET_CONFIG.marketTypes)[number]['value']
+export type UnitValue = (typeof MARKET_CONFIG.units)[number]['value']

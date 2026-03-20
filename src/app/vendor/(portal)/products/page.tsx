@@ -2,21 +2,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import Link from 'next/link'
-import { formatPrice } from '@/lib/utils'
-import { Plus, Pencil } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { cn } from '@/lib/utils'
-import { VendorProductDeleteButton } from './VendorProductDeleteButton'
+import { VendorProductsClient } from './VendorProductsClient'
 
 export default async function VendorProductsPage() {
   const session = await getServerSession(authOptions)
@@ -49,108 +36,12 @@ export default async function VendorProductsPage() {
     orderBy: { name: 'asc' },
   })
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Products</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage your product listings.
-          </p>
-        </div>
-        <Button render={<Link href="/vendor/products/new" />}>
-          <Plus className="mr-1.5 h-4 w-4" />
-          Add Product
-        </Button>
-      </div>
+  // Serialize dates for client component
+  const serialized = products.map((p) => ({
+    ...p,
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.updatedAt.toISOString(),
+  }))
 
-      <Separator />
-
-      {products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
-          <p className="text-sm text-muted-foreground">
-            No products yet. Add your first product to get started.
-          </p>
-          <Button
-            variant="outline"
-            className="mt-4"
-            render={<Link href="/vendor/products/new" />}
-          >
-            <Plus className="mr-1.5 h-4 w-4" />
-            Add Product
-          </Button>
-        </div>
-      ) : (
-        <div className="overflow-x-auto -mx-1">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12"></TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Unit</TableHead>
-              <TableHead className="text-center">Qty</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  {product.imageUrl ? (
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="h-8 w-8 rounded object-cover"
-                    />
-                  ) : (
-                    <div className="h-8 w-8 rounded bg-muted" />
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="font-mono">
-                  {formatPrice(product.price)}
-                </TableCell>
-                <TableCell>{product.unit}</TableCell>
-                <TableCell className="text-center font-mono text-sm">
-                  {product.quantity}
-                </TableCell>
-                <TableCell className="text-center">
-                  <span className="inline-flex items-center gap-1.5 text-xs">
-                    <span
-                      className={cn(
-                        'inline-block h-2 w-2 rounded-full',
-                        product.isAvailable ? 'bg-green-500' : 'bg-gray-400'
-                      )}
-                    />
-                    {product.isAvailable ? 'Available' : 'Unavailable'}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      render={
-                        <Link href={`/vendor/products/${product.id}/edit`} />
-                      }
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      <span className="sr-only">Edit {product.name}</span>
-                    </Button>
-                    <VendorProductDeleteButton
-                      productId={product.id}
-                      productName={product.name}
-                    />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        </div>
-      )}
-    </div>
-  )
+  return <VendorProductsClient products={serialized} />
 }

@@ -17,14 +17,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 
-const UNITS = [
-  { value: 'each', label: 'Each' },
-  { value: 'lb', label: 'Per Pound (lb)' },
-  { value: 'bunch', label: 'Bunch' },
-  { value: 'loaf', label: 'Loaf' },
-  { value: 'jar', label: 'Jar' },
-]
-
 const selectClass = 'flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
 
 const productSchema = z.object({
@@ -171,7 +163,7 @@ export default function VendorNewProductPage() {
               aria-invalid={!!errors.unit}
             >
               <option value="">Select a unit</option>
-              {UNITS.map((u) => (
+              {MARKET_CONFIG.units.map((u) => (
                 <option key={u.value} value={u.value}>
                   {u.label}
                 </option>

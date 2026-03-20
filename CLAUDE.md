@@ -134,4 +134,8 @@ npx prisma db seed       # Seed database
 - Vendor types defined in `MARKET_CONFIG.vendorTypes`
 - Market types defined in `MARKET_CONFIG.marketTypes`
 - Prices stored as integers (cents) in database, formatted via `formatPrice()`
+- Units defined in `MARKET_CONFIG.units` — update there for new units
 - All market-specific copy/config in `market.config.ts` for white-label rebranding
+
+## Future Exploration
+- **AI Assistant**: Explore adding an AI chatbot/assistant to help vendors navigate the portal, answer questions about the market, and walk new vendors through the application/onboarding process.
