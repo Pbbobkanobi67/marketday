@@ -11,7 +11,7 @@ import CartDrawer from '@/components/shop/CartDrawer'
 const NAV_LINKS = [
   { label: 'Vendors', href: '/vendors' },
   { label: 'Become a Vendor', href: '/apply' },
-  { label: 'This Saturday \u2192', href: '/markets/next' },
+  { label: 'Vendor Portal', href: '/vendor/login' },
 ]
 
 export default function Header() {

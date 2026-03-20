@@ -7,6 +7,7 @@ const FOOTER_LINKS = [
   { label: 'Vendors', href: '/vendors' },
   { label: 'Markets', href: '/markets' },
   { label: 'Become a Vendor', href: '/apply' },
+  { label: 'Vendor Portal', href: '/vendor/login' },
 ]
 
 export default function Footer() {
