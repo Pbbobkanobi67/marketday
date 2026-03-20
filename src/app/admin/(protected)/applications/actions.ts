@@ -20,6 +20,12 @@ export async function updateApplicationStatus(
   revalidatePath(`/admin/applications/${id}`)
 }
 
+export async function deleteApplication(id: string) {
+  await prisma.vendorApplication.delete({ where: { id } })
+  revalidatePath('/admin/applications')
+  redirect('/admin/applications')
+}
+
 export async function convertApplicationToVendor(applicationId: string) {
   const app = await prisma.vendorApplication.findUnique({
     where: { id: applicationId },

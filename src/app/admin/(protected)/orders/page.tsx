@@ -1,7 +1,10 @@
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@/generated/prisma/client'
 import { formatPrice, formatMarketDateShort } from '@/lib/utils'
 import Link from 'next/link'
 import OrderStatusBadge from '@/components/admin/OrderStatusBadge'
+import SearchBar from '@/components/admin/SearchBar'
+import FilterPills from '@/components/admin/FilterPills'
 import {
   Table,
   TableBody,
@@ -12,8 +15,33 @@ import {
 } from '@/components/ui/table'
 import { ShoppingCart, ExternalLink } from 'lucide-react'
 
-export default async function AdminOrdersPage() {
+export default async function AdminOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; pickup?: string; payment?: string }>
+}) {
+  const params = await searchParams
+  const q = params.q || ''
+  const pickupFilter = params.pickup || ''
+  const paymentFilter = params.payment || ''
+
+  const where: Prisma.OrderWhereInput = {}
+  if (q) {
+    where.OR = [
+      { orderNumber: { contains: q, mode: 'insensitive' } },
+      { customerName: { contains: q, mode: 'insensitive' } },
+      { customerEmail: { contains: q, mode: 'insensitive' } },
+    ]
+  }
+  if (pickupFilter) {
+    where.pickupStatus = pickupFilter
+  }
+  if (paymentFilter) {
+    where.paymentMethod = paymentFilter
+  }
+
   const orders = await prisma.order.findMany({
+    where,
     orderBy: { createdAt: 'desc' },
     include: {
       market: { select: { name: true, date: true } },
@@ -30,8 +58,37 @@ export default async function AdminOrdersPage() {
             Orders
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {orders.length} total order{orders.length !== 1 ? 's' : ''}
+            {orders.length} order{orders.length !== 1 ? 's' : ''}{q || pickupFilter || paymentFilter ? ' matching filters' : ' total'}
           </p>
+        </div>
+      </div>
+
+      {/* Search & Filters */}
+      <div className="space-y-3">
+        <SearchBar placeholder="Search orders by #, name, or email..." />
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Pickup:</span>
+            <FilterPills
+              paramName="pickup"
+              options={[
+                { value: 'PENDING', label: 'Pending' },
+                { value: 'READY', label: 'Ready' },
+                { value: 'PICKED_UP', label: 'Picked Up' },
+                { value: 'CANCELLED', label: 'Cancelled' },
+              ]}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Payment:</span>
+            <FilterPills
+              paramName="payment"
+              options={[
+                { value: 'STRIPE', label: 'Card' },
+                { value: 'PAY_AT_MARKET', label: 'At Market' },
+              ]}
+            />
+          </div>
         </div>
       </div>
 

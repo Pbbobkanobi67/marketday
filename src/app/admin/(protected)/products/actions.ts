@@ -19,6 +19,18 @@ export async function createProduct(formData: {
   redirect('/admin/products')
 }
 
+export async function deleteProduct(id: string) {
+  const orderItemCount = await prisma.orderItem.count({ where: { productId: id } })
+  if (orderItemCount > 0) {
+    // Soft-delete: mark unavailable if product has order history
+    await prisma.product.update({ where: { id }, data: { isAvailable: false } })
+  } else {
+    await prisma.product.delete({ where: { id } })
+  }
+  revalidatePath('/admin/products')
+  redirect('/admin/products')
+}
+
 export async function updateProduct(
   id: string,
   formData: {

@@ -31,6 +31,7 @@ const vendorSchema = z.object({
   vendorType: z.string().min(1, 'Vendor type is required'),
   businessDescription: z.string().optional(),
   onlineOrdersEnabled: z.boolean(),
+  needsReview: z.boolean(),
   portalPassword: z.string().min(6, 'Password must be at least 6 characters').optional().or(z.literal('')),
 })
 
@@ -53,6 +54,7 @@ interface VendorEditFormProps {
     vendorType: string
     businessDescription: string | null
     onlineOrdersEnabled: boolean
+    needsReview: boolean
     hashedPassword: string | null
   }
 }
@@ -85,6 +87,7 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
       vendorType: vendor.vendorType,
       businessDescription: vendor.businessDescription || '',
       onlineOrdersEnabled: vendor.onlineOrdersEnabled,
+      needsReview: vendor.needsReview,
       portalPassword: '',
     },
   })
@@ -283,6 +286,19 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
             />
             <Label htmlFor="onlineOrdersEnabled" className="cursor-pointer">
               Online Orders Enabled
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="needsReview"
+              checked={watch('needsReview')}
+              onCheckedChange={(checked) =>
+                setValue('needsReview', checked === true)
+              }
+            />
+            <Label htmlFor="needsReview" className="cursor-pointer">
+              Needs Review
             </Label>
           </div>
         </div>

@@ -71,6 +71,7 @@ export async function updateVendor(
     vendorType: string
     businessDescription?: string
     onlineOrdersEnabled: boolean
+    needsReview: boolean
     portalPassword?: string
   }
 ) {
@@ -91,6 +92,7 @@ export async function updateVendor(
     vendorType: rest.vendorType,
     businessDescription: rest.businessDescription || null,
     onlineOrdersEnabled: rest.onlineOrdersEnabled,
+    needsReview: rest.needsReview,
   }
 
   if (portalPassword) {
@@ -103,6 +105,17 @@ export async function updateVendor(
   const adminName = session?.user?.name || 'admin'
   await logVendorChange(id, 'ADMIN_EDIT', adminName, `Admin updated vendor "${rest.name}"`)
 
+  revalidatePath('/admin/vendors')
+  redirect('/admin/vendors')
+}
+
+export async function deleteVendor(id: string) {
+  // Check if vendor has order items — block deletion if so
+  const orderItemCount = await prisma.orderItem.count({ where: { vendorId: id } })
+  if (orderItemCount > 0) {
+    throw new Error('Cannot delete a vendor with existing orders. Deactivate them instead.')
+  }
+  await prisma.vendor.delete({ where: { id } })
   revalidatePath('/admin/vendors')
   redirect('/admin/vendors')
 }

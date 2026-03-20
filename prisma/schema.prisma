@@ -148,6 +148,7 @@ model Order {
   paymentStatus   String      @default("PENDING")
   pickupStatus    String      @default("PENDING")
   stripeSessionId String?
+  adminNotes      String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 }

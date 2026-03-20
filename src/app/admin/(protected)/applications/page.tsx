@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@/generated/prisma/client'
 import { vendorTypeLabel, vendorTypeColor, cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { Separator } from '@/components/ui/separator'
+import FilterPills from '@/components/admin/FilterPills'
 import {
   Table,
   TableBody,
@@ -20,36 +22,47 @@ const STATUS_STYLES: Record<string, string> = {
   REJECTED: 'bg-red-100 text-red-800',
 }
 
-export default async function ApplicationsPage() {
-  const applications = await prisma.vendorApplication.findMany({
+export default async function ApplicationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>
+}) {
+  const params = await searchParams
+  const statusFilter = params.status || ''
+
+  // Always fetch all for counts
+  const allApplications = await prisma.vendorApplication.findMany({
     orderBy: { createdAt: 'desc' },
   })
 
-  const pending = applications.filter((a) => a.status === 'PENDING')
-  const approved = applications.filter((a) => a.status === 'APPROVED')
-  const rejected = applications.filter((a) => a.status === 'REJECTED')
+  const pending = allApplications.filter((a) => a.status === 'PENDING')
+  const approved = allApplications.filter((a) => a.status === 'APPROVED')
+  const rejected = allApplications.filter((a) => a.status === 'REJECTED')
+
+  // Apply filter for display
+  const applications = statusFilter
+    ? allApplications.filter((a) => a.status === statusFilter)
+    : allApplications
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Vendor Applications</h1>
         <p className="text-sm text-muted-foreground">
-          Review and manage vendor applications.
+          {applications.length} application{applications.length !== 1 ? 's' : ''}{statusFilter ? ` (${statusFilter.toLowerCase()})` : ' total'}
         </p>
       </div>
 
-      {/* Summary badges */}
-      <div className="flex flex-wrap gap-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium bg-amber-100 text-amber-800">
-          {pending.length} Pending
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium bg-green-100 text-green-800">
-          {approved.length} Approved
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium bg-red-100 text-red-800">
-          {rejected.length} Rejected
-        </span>
-      </div>
+      {/* Clickable status filter pills */}
+      <FilterPills
+        paramName="status"
+        allLabel={`All (${allApplications.length})`}
+        options={[
+          { value: 'PENDING', label: `Pending (${pending.length})` },
+          { value: 'APPROVED', label: `Approved (${approved.length})` },
+          { value: 'REJECTED', label: `Rejected (${rejected.length})` },
+        ]}
+      />
 
       <Separator />
 

@@ -4,12 +4,10 @@ import { formatPrice, formatMarketDate } from '@/lib/utils'
 import Link from 'next/link'
 import OrderStatusBadge from '@/components/admin/OrderStatusBadge'
 import OrderStatusUpdater from '@/components/admin/OrderStatusUpdater'
+import CustomerInfoEditor from '@/components/admin/CustomerInfoEditor'
+import AdminNotesEditor from '@/components/admin/AdminNotesEditor'
 import {
   ArrowLeft,
-  User,
-  Mail,
-  Phone,
-  StickyNote,
   Calendar,
   Clock,
   MapPin,
@@ -84,46 +82,15 @@ export default async function AdminOrderDetailPage({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Customer information */}
-        <div className="card-market p-6 space-y-4">
-          <h2 className="font-display text-lg font-semibold text-market-soil">
-            Customer Details
-          </h2>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <User className="size-4 text-market-sage shrink-0" />
-              <span className="text-sm">{order.customerName}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Mail className="size-4 text-market-sage shrink-0" />
-              <a
-                href={`mailto:${order.customerEmail}`}
-                className="text-sm text-market-sage hover:underline"
-              >
-                {order.customerEmail}
-              </a>
-            </div>
-            {order.customerPhone && (
-              <div className="flex items-center gap-3">
-                <Phone className="size-4 text-market-sage shrink-0" />
-                <a
-                  href={`tel:${order.customerPhone}`}
-                  className="text-sm text-market-sage hover:underline"
-                >
-                  {order.customerPhone}
-                </a>
-              </div>
-            )}
-            {order.customerNotes && (
-              <div className="flex items-start gap-3">
-                <StickyNote className="size-4 text-market-sage shrink-0 mt-0.5" />
-                <p className="text-sm text-muted-foreground">
-                  {order.customerNotes}
-                </p>
-              </div>
-            )}
-          </div>
+        {/* Customer information (editable) */}
+        <div className="card-market p-6">
+          <CustomerInfoEditor
+            orderId={order.id}
+            customerName={order.customerName}
+            customerEmail={order.customerEmail}
+            customerPhone={order.customerPhone}
+            customerNotes={order.customerNotes}
+          />
         </div>
 
         {/* Market / pickup info */}
@@ -220,11 +187,20 @@ export default async function AdminOrderDetailPage({
         </div>
       </div>
 
+      {/* Admin Notes */}
+      <div className="card-market p-6">
+        <AdminNotesEditor
+          orderId={order.id}
+          initialNotes={order.adminNotes}
+        />
+      </div>
+
       {/* Status updater */}
       <div className="card-market p-6">
         <OrderStatusUpdater
           orderId={order.id}
           currentPickupStatus={order.pickupStatus}
+          currentPaymentStatus={order.paymentStatus}
         />
       </div>
     </div>

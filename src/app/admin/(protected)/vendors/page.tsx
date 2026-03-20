@@ -1,9 +1,13 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@/generated/prisma/client'
 import { categoryLabel, categoryColor, vendorTypeLabel, vendorTypeColor, cn } from '@/lib/utils'
-import { Plus, Pencil, ExternalLink, AlertCircle, History } from 'lucide-react'
+import { Plus, AlertCircle, History } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import SearchBar from '@/components/admin/SearchBar'
+import FilterPills from '@/components/admin/FilterPills'
+import { MARKET_CONFIG } from '@/config/market.config'
 import {
   Table,
   TableBody,
@@ -12,9 +16,37 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import VendorRowActions from '@/components/admin/VendorRowActions'
 
-export default async function AdminVendorsPage() {
+export default async function AdminVendorsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; category?: string; type?: string; status?: string }>
+}) {
+  const params = await searchParams
+  const q = params.q || ''
+  const categoryFilter = params.category || ''
+  const typeFilter = params.type || ''
+  const statusFilter = params.status || ''
+
+  const where: Prisma.VendorWhereInput = {}
+  if (q) {
+    where.name = { contains: q, mode: 'insensitive' }
+  }
+  if (categoryFilter) {
+    where.category = categoryFilter
+  }
+  if (typeFilter) {
+    where.vendorType = typeFilter
+  }
+  if (statusFilter === 'active') {
+    where.isActive = true
+  } else if (statusFilter === 'inactive') {
+    where.isActive = false
+  }
+
   const vendors = await prisma.vendor.findMany({
+    where,
     include: { _count: { select: { products: true } } },
     orderBy: { name: 'asc' },
   })
@@ -25,7 +57,7 @@ export default async function AdminVendorsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Vendors</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your market vendors and their profiles.
+            {vendors.length} vendor{vendors.length !== 1 ? 's' : ''}{q || categoryFilter || typeFilter || statusFilter ? ' matching filters' : ' total'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -37,6 +69,37 @@ export default async function AdminVendorsPage() {
             <Plus className="mr-1.5 h-4 w-4" />
             Add Vendor
           </Button>
+        </div>
+      </div>
+
+      {/* Search & Filters */}
+      <div className="space-y-3">
+        <SearchBar placeholder="Search vendors by name..." />
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Category:</span>
+            <FilterPills
+              paramName="category"
+              options={MARKET_CONFIG.categories.map((c) => ({ value: c.value, label: c.label }))}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Type:</span>
+            <FilterPills
+              paramName="type"
+              options={MARKET_CONFIG.vendorTypes.map((v) => ({ value: v.value, label: v.label }))}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Status:</span>
+            <FilterPills
+              paramName="status"
+              options={[
+                { value: 'active', label: 'Active' },
+                { value: 'inactive', label: 'Inactive' },
+              ]}
+            />
+          </div>
         </div>
       </div>
 
@@ -130,26 +193,11 @@ export default async function AdminVendorsPage() {
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      render={
-                        <Link href={`/admin/vendors/${vendor.id}/edit`} />
-                      }
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      <span className="sr-only">Edit {vendor.name}</span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      render={<Link href={`/vendors/${vendor.slug}`} />}
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      <span className="sr-only">View {vendor.name}</span>
-                    </Button>
-                  </div>
+                  <VendorRowActions
+                    vendorId={vendor.id}
+                    vendorName={vendor.name}
+                    vendorSlug={vendor.slug}
+                  />
                 </TableCell>
               </TableRow>
             ))}

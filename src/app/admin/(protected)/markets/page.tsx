@@ -1,9 +1,12 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@/generated/prisma/client'
 import { formatMarketDate, marketTypeLabel, cn } from '@/lib/utils'
-import { Plus, Pencil, Users } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import FilterPills from '@/components/admin/FilterPills'
+import { MARKET_CONFIG } from '@/config/market.config'
 import {
   Table,
   TableBody,
@@ -12,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import MarketRowActions from '@/components/admin/MarketRowActions'
 
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
@@ -26,8 +30,25 @@ const TYPE_STYLES: Record<string, string> = {
   PICKUP_EVENT: 'bg-indigo-100 text-indigo-800',
 }
 
-export default async function AdminMarketsPage() {
+export default async function AdminMarketsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; type?: string }>
+}) {
+  const params = await searchParams
+  const statusFilter = params.status || ''
+  const typeFilter = params.type || ''
+
+  const where: Prisma.MarketWhereInput = {}
+  if (statusFilter) {
+    where.status = statusFilter
+  }
+  if (typeFilter) {
+    where.type = typeFilter
+  }
+
   const markets = await prisma.market.findMany({
+    where,
     include: {
       _count: { select: { orders: true, vendors: true } },
     },
@@ -40,13 +61,37 @@ export default async function AdminMarketsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Markets</h1>
           <p className="text-sm text-muted-foreground">
-            Manage upcoming and past market days.
+            {markets.length} market{markets.length !== 1 ? 's' : ''}{statusFilter || typeFilter ? ' matching filters' : ' total'}
           </p>
         </div>
         <Button render={<Link href="/admin/markets/new" />}>
           <Plus className="mr-1.5 h-4 w-4" />
           Add Market
         </Button>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground">Status:</span>
+          <FilterPills
+            paramName="status"
+            options={[
+              { value: 'DRAFT', label: 'Draft' },
+              { value: 'UPCOMING', label: 'Upcoming' },
+              { value: 'ACTIVE', label: 'Active' },
+              { value: 'PAST', label: 'Past' },
+              { value: 'CANCELLED', label: 'Cancelled' },
+            ]}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground">Type:</span>
+          <FilterPills
+            paramName="type"
+            options={MARKET_CONFIG.marketTypes.map((t) => ({ value: t.value, label: t.label }))}
+          />
+        </div>
       </div>
 
       <Separator />
@@ -113,28 +158,10 @@ export default async function AdminMarketsPage() {
                   {market._count.orders}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      render={
-                        <Link href={`/admin/markets/${market.id}/vendors`} />
-                      }
-                    >
-                      <Users className="h-3.5 w-3.5" />
-                      <span className="sr-only">Manage vendors for {market.name}</span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      render={
-                        <Link href={`/admin/markets/${market.id}/edit`} />
-                      }
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      <span className="sr-only">Edit {market.name}</span>
-                    </Button>
-                  </div>
+                  <MarketRowActions
+                    marketId={market.id}
+                    marketName={market.name}
+                  />
                 </TableCell>
               </TableRow>
             ))}
