@@ -57,6 +57,7 @@ export default async function AdminVendorsPage() {
           </Button>
         </div>
       ) : (
+        <div className="overflow-x-auto -mx-1">
         <Table>
           <TableHeader>
             <TableRow>
@@ -154,6 +155,7 @@ export default async function AdminVendorsPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   )

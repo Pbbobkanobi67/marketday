@@ -81,6 +81,7 @@ export default async function VendorProductsPage() {
           </Button>
         </div>
       ) : (
+        <div className="overflow-x-auto -mx-1">
         <Table>
           <TableHeader>
             <TableRow>
@@ -132,6 +133,7 @@ export default async function VendorProductsPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   )

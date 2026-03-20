@@ -143,10 +143,10 @@ export default function CartDrawer() {
                               onClick={() =>
                                 updateQuantity(item.productId, item.quantity - 1)
                               }
-                              className="flex items-center justify-center w-6 h-6 rounded bg-market-warm hover:bg-market-stone text-market-soil transition-colors"
+                              className="flex items-center justify-center w-8 h-8 rounded bg-market-warm hover:bg-market-stone text-market-soil transition-colors"
                               aria-label={`Decrease quantity of ${item.productName}`}
                             >
-                              <Minus className="w-3 h-3" />
+                              <Minus className="w-3.5 h-3.5" />
                             </button>
                             <span className="text-sm font-medium text-market-soil w-5 text-center tabular-nums">
                               {item.quantity}
@@ -155,10 +155,10 @@ export default function CartDrawer() {
                               onClick={() =>
                                 updateQuantity(item.productId, item.quantity + 1)
                               }
-                              className="flex items-center justify-center w-6 h-6 rounded bg-market-warm hover:bg-market-stone text-market-soil transition-colors"
+                              className="flex items-center justify-center w-8 h-8 rounded bg-market-warm hover:bg-market-stone text-market-soil transition-colors"
                               aria-label={`Increase quantity of ${item.productName}`}
                             >
-                              <Plus className="w-3 h-3" />
+                              <Plus className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>

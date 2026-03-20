@@ -77,6 +77,7 @@ export default async function VendorChangelogPage({
           <p className="text-sm text-muted-foreground">No changes logged for this vendor yet.</p>
         </div>
       ) : (
+        <div className="overflow-x-auto -mx-1">
         <Table>
           <TableHeader>
             <TableRow>
@@ -115,6 +116,7 @@ export default async function VendorChangelogPage({
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   )

@@ -88,12 +88,12 @@ export default async function HomePage() {
             </div>
 
             {/* Right column — category cards (desktop) */}
-            <div className="hidden lg:grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {topCategories.map((cat) => (
                   <Link
                     key={cat.value}
                     href={`/vendors?category=${cat.value}`}
-                    className="card-market p-6 flex flex-col items-center justify-center gap-3 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                    className="card-market p-4 lg:p-6 flex flex-col items-center justify-center gap-3 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
                   >
                     <span className="text-4xl" role="img" aria-label={cat.label}>
                       {cat.emoji}

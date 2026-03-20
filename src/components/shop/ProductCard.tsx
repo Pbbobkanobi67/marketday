@@ -169,7 +169,7 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
             <div className="flex items-center gap-2">
               <button
                 onClick={handleDecrement}
-                className="flex items-center justify-center w-7 h-7 rounded-md bg-market-warm hover:bg-market-stone text-market-soil transition-colors"
+                className="flex items-center justify-center w-8 h-8 rounded-md bg-market-warm hover:bg-market-stone text-market-soil transition-colors"
                 aria-label={`Decrease quantity of ${product.name}`}
               >
                 <Minus className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
               </span>
               <button
                 onClick={handleIncrement}
-                className="flex items-center justify-center w-7 h-7 rounded-md bg-market-sage hover:bg-market-sage-dk text-white transition-colors"
+                className="flex items-center justify-center w-8 h-8 rounded-md bg-market-sage hover:bg-market-sage-dk text-white transition-colors"
                 aria-label={`Increase quantity of ${product.name}`}
               >
                 <Plus className="w-3.5 h-3.5" />

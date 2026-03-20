@@ -51,6 +51,7 @@ export default async function AdminProductsPage() {
           </Button>
         </div>
       ) : (
+        <div className="overflow-x-auto -mx-1">
         <Table>
           <TableHeader>
             <TableRow>
@@ -111,6 +112,7 @@ export default async function AdminProductsPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   )

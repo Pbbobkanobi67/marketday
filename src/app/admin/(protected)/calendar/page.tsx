@@ -62,7 +62,9 @@ export default async function CalendarPage() {
                 {monthLabel}
               </h2>
 
-              {/* Day headers */}
+              {/* Day headers + Calendar grid */}
+              <div className="overflow-x-auto -mx-1">
+              <div className="min-w-[480px]">
               <div className="grid grid-cols-7 gap-1 mb-1">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
                   <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground py-1">
@@ -121,6 +123,8 @@ export default async function CalendarPage() {
                     </div>
                   )
                 })}
+              </div>
+              </div>
               </div>
             </div>
           )

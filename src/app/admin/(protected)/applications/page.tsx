@@ -39,7 +39,7 @@ export default async function ApplicationsPage() {
       </div>
 
       {/* Summary badges */}
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium bg-amber-100 text-amber-800">
           {pending.length} Pending
         </span>
@@ -60,6 +60,7 @@ export default async function ApplicationsPage() {
           </p>
         </div>
       ) : (
+        <div className="overflow-x-auto -mx-1">
         <Table>
           <TableHeader>
             <TableRow>
@@ -116,6 +117,7 @@ export default async function ApplicationsPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   )

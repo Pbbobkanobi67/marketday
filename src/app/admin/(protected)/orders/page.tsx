@@ -45,6 +45,7 @@ export default async function AdminOrdersPage() {
             </p>
           </div>
         ) : (
+          <div className="overflow-x-auto -mx-1">
           <Table>
             <TableHeader>
               <TableRow>
@@ -121,6 +122,7 @@ export default async function AdminOrdersPage() {
               ))}
             </TableBody>
           </Table>
+          </div>
         )}
       </div>
     </div>

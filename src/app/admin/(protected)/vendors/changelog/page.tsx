@@ -59,6 +59,7 @@ export default async function GlobalChangelogPage() {
           <p className="text-sm text-muted-foreground">No changes logged yet.</p>
         </div>
       ) : (
+        <div className="overflow-x-auto -mx-1">
         <Table>
           <TableHeader>
             <TableRow>
@@ -106,6 +107,7 @@ export default async function GlobalChangelogPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   )

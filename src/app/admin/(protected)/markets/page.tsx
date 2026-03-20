@@ -66,6 +66,7 @@ export default async function AdminMarketsPage() {
           </Button>
         </div>
       ) : (
+        <div className="overflow-x-auto -mx-1">
         <Table>
           <TableHeader>
             <TableRow>
@@ -139,6 +140,7 @@ export default async function AdminMarketsPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   )

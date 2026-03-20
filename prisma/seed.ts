@@ -26,7 +26,6 @@ type VendorSeed = {
   description: string
   category: string
   vendorType: string
-  onlineOrdersEnabled?: boolean
 }
 
 // ── All 63 real vendors from mymarket.org profiles ──────────────────────
@@ -45,7 +44,7 @@ const vendors: VendorSeed[] = [
     description: 'Artisan sourdough bread baked fresh weekly. Handcrafted loaves with love and tradition.',
     category: 'baked',
     vendorType: 'baked_goods',
-    onlineOrdersEnabled: true,
+
   },
   // ── Cottage Food Vendors ──
   {
@@ -72,7 +71,7 @@ const vendors: VendorSeed[] = [
     description: 'A small, artisan micro-farm rooted in El Cajon run by a dedicated two-person team. We grow premium microgreens, vibrant wheatgrass, and seasonal edible flowers.',
     category: 'certified_farmer',
     vendorType: 'certified_farmer',
-    onlineOrdersEnabled: true,
+
   },
   {
     name: 'Cahuilla Mountain Ranch',
@@ -85,7 +84,7 @@ const vendors: VendorSeed[] = [
     description: 'A registered organic mushroom and micro-green farm in Ramona, California. We grow mushrooms with medicinal value that can be dried, powdered, or eaten fresh as a culinary delight.',
     category: 'certified_farmer',
     vendorType: 'certified_farmer',
-    onlineOrdersEnabled: true,
+
   },
   {
     name: 'Onofre Farms',
@@ -223,7 +222,7 @@ const vendors: VendorSeed[] = [
     description: 'A San Diego-based micro-roastery specializing in freshly roasted, specialty-grade coffee. We source premium beans from ethically minded producers and roast in small batches.',
     category: 'specialty',
     vendorType: 'specialty_food',
-    onlineOrdersEnabled: true,
+
   },
   {
     name: 'Krench',
@@ -432,6 +431,7 @@ async function main() {
   console.log('Seeding Backroads Certified Farmers Market database...')
 
   // -- Clean slate --
+  await prisma.vendorChangeLog.deleteMany()
   await prisma.orderItem.deleteMany()
   await prisma.order.deleteMany()
   await prisma.marketVendor.deleteMany()
@@ -470,8 +470,8 @@ async function main() {
   })
   console.log('  3 admin users created')
 
-  // -- Markets (Saturdays at El Cajon) --
-  const market1 = await prisma.market.create({
+  // -- Markets (Saturdays at El Cajon — active dates only) --
+  await prisma.market.create({
     data: {
       name: 'Saturday Market - March 22',
       date: new Date('2026-03-22T09:00:00-07:00'),
@@ -487,34 +487,6 @@ async function main() {
 
   await prisma.market.create({
     data: {
-      name: 'Saturday Market - March 28',
-      date: new Date('2026-03-28T09:00:00-07:00'),
-      openTime: '9:00 AM',
-      closeTime: '1:00 PM',
-      location: 'Backroads Certified Farmers Market',
-      address: '14335 Olde Hwy 80, El Cajon, CA 92021',
-      description: 'Market closed this week.',
-      type: 'SATURDAY_MARKET',
-      status: 'CANCELLED',
-    },
-  })
-
-  await prisma.market.create({
-    data: {
-      name: 'Saturday Market - April 4',
-      date: new Date('2026-04-04T09:00:00-07:00'),
-      openTime: '9:00 AM',
-      closeTime: '1:00 PM',
-      location: 'Backroads Certified Farmers Market',
-      address: '14335 Olde Hwy 80, El Cajon, CA 92021',
-      description: 'Market closed this week.',
-      type: 'SATURDAY_MARKET',
-      status: 'CANCELLED',
-    },
-  })
-
-  const market4 = await prisma.market.create({
-    data: {
       name: 'Saturday Market - April 11',
       date: new Date('2026-04-11T09:00:00-07:00'),
       openTime: '9:00 AM',
@@ -527,7 +499,7 @@ async function main() {
     },
   })
 
-  const market5 = await prisma.market.create({
+  await prisma.market.create({
     data: {
       name: 'Saturday Market - April 18',
       date: new Date('2026-04-18T09:00:00-07:00'),
@@ -540,21 +512,19 @@ async function main() {
       status: 'UPCOMING',
     },
   })
-  console.log('  5 markets created (2 cancelled)')
+  console.log('  3 markets created')
 
-  // -- Create all vendors --
-  const createdVendors: Record<string, { id: string; name: string }> = {}
+  // -- Create all vendors (no products — vendors add their own via portal) --
   const usedSlugs = new Set<string>()
 
   for (const v of vendors) {
     let slug = slugify(v.name)
-    // Ensure unique slugs
     if (usedSlugs.has(slug)) {
       slug = `${slug}-${usedSlugs.size}`
     }
     usedSlugs.add(slug)
 
-    const created = await prisma.vendor.create({
+    await prisma.vendor.create({
       data: {
         name: v.name,
         slug,
@@ -562,169 +532,11 @@ async function main() {
         category: v.category,
         vendorType: v.vendorType,
         isActive: true,
-        onlineOrdersEnabled: v.onlineOrdersEnabled ?? false,
+        onlineOrdersEnabled: false,
       },
     })
-    createdVendors[v.name] = { id: created.id, name: created.name }
   }
-  console.log(`  ${vendors.length} vendors created`)
-
-  // -- Products for online-ordering vendors --
-  const bigTime = createdVendors['Big Time Harvest']
-  const indianIron = createdVendors['Indian Iron Farms LLC']
-  const sourdough = createdVendors['Sourdough Habit']
-  const coffee = createdVendors['Intergalactic Coffee']
-
-  // Big Time Harvest products
-  const p1 = await prisma.product.create({ data: { name: 'Premium Microgreens Mix', slug: 'big-time-harvest-microgreens-mix', description: 'A vibrant blend of sunflower, pea, radish, and broccoli microgreens. Harvested fresh.', price: 800, unit: 'tray', category: 'certified_farmer', vendorId: bigTime.id, isAvailable: true } })
-  const p2 = await prisma.product.create({ data: { name: 'Wheatgrass Tray', slug: 'big-time-harvest-wheatgrass', description: 'Living wheatgrass tray, perfect for juicing. Grown without pesticides.', price: 1200, unit: 'tray', category: 'certified_farmer', vendorId: bigTime.id, isAvailable: true } })
-  await prisma.product.create({ data: { name: 'Edible Flower Mix', slug: 'big-time-harvest-edible-flowers', description: 'Seasonal edible flowers for garnishing and salads.', price: 600, unit: 'pack', category: 'certified_farmer', vendorId: bigTime.id, isAvailable: true } })
-
-  // Indian Iron Farms products
-  const p4 = await prisma.product.create({ data: { name: 'Fresh Lion\'s Mane Mushroom', slug: 'indian-iron-lions-mane', description: 'Organic lion\'s mane mushroom, known for cognitive health benefits. Grown in Ramona.', price: 1400, unit: 'lb', category: 'certified_farmer', vendorId: indianIron.id, isAvailable: true } })
-  await prisma.product.create({ data: { name: 'Dried Shiitake Mushrooms', slug: 'indian-iron-dried-shiitake', description: 'Dehydrated shiitake mushrooms, perfect for soups, stir-fry, and sauces.', price: 1600, unit: 'bag', category: 'certified_farmer', vendorId: indianIron.id, isAvailable: true } })
-  await prisma.product.create({ data: { name: 'Oyster Mushroom Cluster', slug: 'indian-iron-oyster-mushroom', description: 'Fresh blue oyster mushrooms. Versatile and delicious sauteed or grilled.', price: 1000, unit: 'lb', category: 'certified_farmer', vendorId: indianIron.id, isAvailable: true } })
-
-  // Sourdough Habit products
-  const p7 = await prisma.product.create({ data: { name: 'Classic Sourdough Loaf', slug: 'sourdough-habit-classic', description: 'Traditional sourdough with a crispy crust and open crumb. Naturally leavened.', price: 1200, unit: 'loaf', category: 'baked', vendorId: sourdough.id, isAvailable: true } })
-  const p8 = await prisma.product.create({ data: { name: 'Jalapeño Cheddar Sourdough', slug: 'sourdough-habit-jalapeno-cheddar', description: 'Sourdough studded with jalapeños and sharp cheddar. A market favorite.', price: 1400, unit: 'loaf', category: 'baked', vendorId: sourdough.id, isAvailable: true } })
-  await prisma.product.create({ data: { name: 'Sourdough Cinnamon Rolls (4-pack)', slug: 'sourdough-habit-cinnamon-rolls', description: 'Soft, pillowy cinnamon rolls made with sourdough starter. Pack of 4.', price: 1600, unit: 'pack', category: 'baked', vendorId: sourdough.id, isAvailable: true } })
-
-  // Intergalactic Coffee products
-  const p10 = await prisma.product.create({ data: { name: 'House Blend - Whole Bean', slug: 'intergalactic-house-blend', description: 'Our signature medium roast. Notes of chocolate, caramel, and citrus. 12oz bag.', price: 1800, unit: 'bag', category: 'specialty', vendorId: coffee.id, isAvailable: true } })
-  await prisma.product.create({ data: { name: 'Single Origin Ethiopia', slug: 'intergalactic-ethiopia', description: 'Light roast Ethiopian beans with bright floral and berry notes. 12oz bag.', price: 2000, unit: 'bag', category: 'specialty', vendorId: coffee.id, isAvailable: true } })
-  await prisma.product.create({ data: { name: 'Cold Brew Concentrate', slug: 'intergalactic-cold-brew', description: 'Ready-to-dilute cold brew concentrate. Makes 8 servings. 32oz bottle.', price: 1600, unit: 'bottle', category: 'specialty', vendorId: coffee.id, isAvailable: true } })
-  console.log('  12 products created')
-
-  // -- MarketVendor assignments --
-  // Assign a diverse mix of vendors to each active market
-  const market1Vendors = [
-    'Big Time Harvest', 'Indian Iron Farms LLC', 'Sourdough Habit', 'Intergalactic Coffee',
-    "Surf'n Slaw LLC", 'On Point BBQ', 'Parana Empanadas Markets & Catering LLC',
-    'Big Boyz Tacos @ 32North', 'Rainbow Roots Co.', 'CHAFOLIO',
-    'Onofre Farms', 'Scorpion Farms', "JP's Herbs and Spices",
-    '1976 Candle Co', 'Casa Blah Blah', 'Lovely Sisters Farm',
-    'Bee the Change Foundation', 'Books Brews & Dogs',
-  ]
-
-  const market4Vendors = [
-    'Big Time Harvest', 'Indian Iron Farms LLC', 'Sourdough Habit', 'Intergalactic Coffee',
-    "Surf'n Slaw LLC", 'Pudz Pizza, LLC', 'The Rogue Pierogi',
-    "AK's Sweet Treats and Lemonades", 'Conscious Cafe',
-    'Cahuilla Mountain Ranch', 'BZ Quail Farm', 'Pepper Drive Family Farm',
-    'Amandas Macarons', 'LUME Granola', 'Great Scott Kettle Corn Company',
-    'Drizzled & Sprinkled', 'Beehive Candleworks', 'Ramona Candle Co.',
-    'RCB Crochet', 'Rooted Relics', 'GimmeDemPlants',
-  ]
-
-  const market5Vendors = [
-    'Big Time Harvest', 'Indian Iron Farms LLC', 'Sourdough Habit', 'Intergalactic Coffee',
-    "Surf'n Slaw LLC", 'On Point BBQ', 'Pudz Pizza, LLC',
-    'Rainbow Roots Co.', "AK's Sweet Treats and Lemonades",
-    'Onofre Farms', 'Scorpion Farms', 'Cahuilla Mountain Ranch',
-    "Not Your Nonna's Sauce Company", 'Olympus Reserve LLC', "Ruth's No5 Salsa",
-    'Kendrick Homestead, LLC', 'Divine Linxs Permanent Jewelry', 'Comfy Cuties Co',
-    'HKC Designs', 'Deja Vu Bags', 'Bee the Change Foundation',
-  ]
-
-  for (const name of market1Vendors) {
-    if (createdVendors[name]) {
-      await prisma.marketVendor.create({
-        data: { marketId: market1.id, vendorId: createdVendors[name].id },
-      })
-    }
-  }
-  for (const name of market4Vendors) {
-    if (createdVendors[name]) {
-      await prisma.marketVendor.create({
-        data: { marketId: market4.id, vendorId: createdVendors[name].id },
-      })
-    }
-  }
-  for (const name of market5Vendors) {
-    if (createdVendors[name]) {
-      await prisma.marketVendor.create({
-        data: { marketId: market5.id, vendorId: createdVendors[name].id },
-      })
-    }
-  }
-  console.log('  Market-vendor assignments created')
-
-  // -- Sample Orders --
-  await prisma.order.create({
-    data: {
-      orderNumber: 'BR-2026-0001',
-      customerName: 'Sarah Mitchell',
-      customerEmail: 'sarah@example.com',
-      customerPhone: '619-555-0101',
-      marketId: market1.id,
-      subtotal: p7.price * 1 + p8.price * 1,
-      paymentMethod: 'STRIPE',
-      paymentStatus: 'PAID',
-      pickupStatus: 'PENDING',
-      items: {
-        create: [
-          { productId: p7.id, vendorId: sourdough.id, quantity: 1, priceAtTime: p7.price, productName: p7.name, vendorName: sourdough.name },
-          { productId: p8.id, vendorId: sourdough.id, quantity: 1, priceAtTime: p8.price, productName: p8.name, vendorName: sourdough.name },
-        ],
-      },
-    },
-  })
-
-  await prisma.order.create({
-    data: {
-      orderNumber: 'BR-2026-0002',
-      customerName: 'James Rivera',
-      customerEmail: 'jrivera@example.com',
-      customerPhone: '619-555-0202',
-      marketId: market1.id,
-      subtotal: p1.price * 2 + p4.price * 1,
-      paymentMethod: 'AT_MARKET',
-      paymentStatus: 'PENDING',
-      pickupStatus: 'PENDING',
-      items: {
-        create: [
-          { productId: p1.id, vendorId: bigTime.id, quantity: 2, priceAtTime: p1.price, productName: p1.name, vendorName: bigTime.name },
-          { productId: p4.id, vendorId: indianIron.id, quantity: 1, priceAtTime: p4.price, productName: p4.name, vendorName: indianIron.name },
-        ],
-      },
-    },
-  })
-
-  await prisma.order.create({
-    data: {
-      orderNumber: 'BR-2026-0003',
-      customerName: 'Leila Nakamura',
-      customerEmail: 'leila@example.com',
-      marketId: market4.id,
-      subtotal: p10.price * 2 + p2.price * 1,
-      paymentMethod: 'AT_MARKET',
-      paymentStatus: 'PENDING',
-      pickupStatus: 'PENDING',
-      items: {
-        create: [
-          { productId: p10.id, vendorId: coffee.id, quantity: 2, priceAtTime: p10.price, productName: p10.name, vendorName: coffee.name },
-          { productId: p2.id, vendorId: bigTime.id, quantity: 1, priceAtTime: p2.price, productName: p2.name, vendorName: bigTime.name },
-        ],
-      },
-    },
-  })
-  console.log('  3 sample orders created')
-
-  // -- Sample Vendor Application --
-  await prisma.vendorApplication.create({
-    data: {
-      businessName: 'East County Jams',
-      contactPerson: 'Ana Morales',
-      email: 'ana@eastcountyjams.com',
-      phone: '(619) 555-0500',
-      vendorType: 'specialty_food',
-      productsDescription: 'Small-batch jams and preserves made from locally sourced fruit.',
-      businessDescription: 'Family business making preserves for 10 years at local farmers markets.',
-      status: 'PENDING',
-    },
-  })
-  console.log('  1 sample vendor application created')
+  console.log(`  ${vendors.length} vendors created (no products — vendors add via portal)`)
 
   console.log(`\nSeed complete! ${vendors.length} real vendors loaded.`)
   console.log('   Admin logins:')

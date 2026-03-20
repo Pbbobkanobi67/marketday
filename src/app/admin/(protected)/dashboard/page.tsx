@@ -79,7 +79,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Upcoming Orders"
           value={totalOrders}
@@ -170,6 +170,7 @@ export default async function AdminDashboardPage() {
             them.
           </div>
         ) : (
+          <div className="overflow-x-auto -mx-1">
           <Table>
             <TableHeader>
               <TableRow>
@@ -230,6 +231,7 @@ export default async function AdminDashboardPage() {
               ))}
             </TableBody>
           </Table>
+          </div>
         )}
       </div>
     </div>

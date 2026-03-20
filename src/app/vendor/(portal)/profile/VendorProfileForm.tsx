@@ -153,7 +153,7 @@ export function VendorProfileForm({ vendor }: VendorProfileFormProps) {
           Contact Info
         </h3>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="contactPerson">Contact Person</Label>
             <Input id="contactPerson" {...register('contactPerson')} />
@@ -167,7 +167,7 @@ export function VendorProfileForm({ vendor }: VendorProfileFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="phone">Phone</Label>
             <Input id="phone" {...register('phone')} />
@@ -178,7 +178,7 @@ export function VendorProfileForm({ vendor }: VendorProfileFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="instagramHandle">Instagram</Label>
             <Input id="instagramHandle" placeholder="@handle" {...register('instagramHandle')} />

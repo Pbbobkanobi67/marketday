@@ -160,7 +160,7 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <select
@@ -210,7 +210,7 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
         {/* Contact Info */}
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Contact Info</h3>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="contactPerson">Contact Person</Label>
             <Input id="contactPerson" placeholder="Full name" {...register('contactPerson')} />
@@ -224,7 +224,7 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="phone">Phone</Label>
             <Input id="phone" placeholder="(619) 555-0100" {...register('phone')} />
@@ -235,7 +235,7 @@ export function VendorEditForm({ vendor }: VendorEditFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="instagramHandle">Instagram Handle</Label>
             <Input id="instagramHandle" placeholder="@handle" {...register('instagramHandle')} />
