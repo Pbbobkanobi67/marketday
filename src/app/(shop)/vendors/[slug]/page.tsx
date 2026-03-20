@@ -154,10 +154,15 @@ export default async function VendorDetailPage({ params }: Props) {
               </a>
             )}
             {vendor.facebookHandle && (
-              <span className="inline-flex items-center gap-1.5 text-sm text-market-sage">
+              <a
+                href={vendor.facebookHandle.startsWith('http') ? vendor.facebookHandle : `https://facebook.com/${vendor.facebookHandle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-market-sage hover:text-market-sage-dk transition-colors"
+              >
                 <Facebook className="w-3.5 h-3.5" />
-                {vendor.facebookHandle}
-              </span>
+                Facebook
+              </a>
             )}
           </div>
         </div>
