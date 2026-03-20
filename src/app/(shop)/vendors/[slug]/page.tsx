@@ -213,30 +213,39 @@ export default async function VendorDetailPage({ params }: Props) {
       )}
 
       {/* Payment Methods */}
-      {(vendor.venmoQrUrl || vendor.paypalQrUrl || vendor.zelleQrUrl) && (
+      {(vendor.venmoQrUrl || vendor.paypalQrUrl || vendor.zelleQrUrl || vendor.gpayQrUrl || vendor.applePayQrUrl ||
+        vendor.venmoLink || vendor.paypalLink || vendor.zelleLink || vendor.gpayLink || vendor.applePayLink) && (
         <div className="card-market p-5 mb-10">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
             Payment Methods
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {vendor.venmoQrUrl && (
-              <div className="text-center">
-                <img src={vendor.venmoQrUrl} alt="Venmo QR Code" className="rounded-lg w-full max-w-[160px] mx-auto" />
-                <p className="text-xs text-muted-foreground mt-1">Venmo</p>
-              </div>
-            )}
-            {vendor.paypalQrUrl && (
-              <div className="text-center">
-                <img src={vendor.paypalQrUrl} alt="PayPal QR Code" className="rounded-lg w-full max-w-[160px] mx-auto" />
-                <p className="text-xs text-muted-foreground mt-1">PayPal</p>
-              </div>
-            )}
-            {vendor.zelleQrUrl && (
-              <div className="text-center">
-                <img src={vendor.zelleQrUrl} alt="Zelle QR Code" className="rounded-lg w-full max-w-[160px] mx-auto" />
-                <p className="text-xs text-muted-foreground mt-1">Zelle</p>
-              </div>
-            )}
+            {[
+              { label: 'Venmo', qr: vendor.venmoQrUrl, link: vendor.venmoLink },
+              { label: 'PayPal', qr: vendor.paypalQrUrl, link: vendor.paypalLink },
+              { label: 'Zelle', qr: vendor.zelleQrUrl, link: vendor.zelleLink },
+              { label: 'Google Pay', qr: vendor.gpayQrUrl, link: vendor.gpayLink },
+              { label: 'Apple Pay', qr: vendor.applePayQrUrl, link: vendor.applePayLink },
+            ]
+              .filter((m) => m.qr || m.link)
+              .map((method) => (
+                <div key={method.label} className="text-center">
+                  {method.qr && (
+                    <img src={method.qr} alt={`${method.label} QR Code`} className="rounded-lg w-full max-w-[160px] mx-auto" />
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">{method.label}</p>
+                  {method.link && (
+                    <a
+                      href={method.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-market-sage hover:text-market-sage-dk transition-colors"
+                    >
+                      Pay with {method.label}
+                    </a>
+                  )}
+                </div>
+              ))}
           </div>
         </div>
       )}
