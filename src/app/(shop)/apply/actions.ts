@@ -13,6 +13,13 @@ export async function submitVendorApplication(formData: {
   vendorType: string
   productsDescription?: string
   businessDescription?: string
+  productPhoto1Url?: string | null
+  productPhoto2Url?: string | null
+  productPhoto3Url?: string | null
+  productPhoto4Url?: string | null
+  productPhoto5Url?: string | null
+  insuranceDocUrl?: string | null
+  taxDocUrl?: string | null
 }) {
   await prisma.vendorApplication.create({
     data: {
@@ -26,6 +33,13 @@ export async function submitVendorApplication(formData: {
       vendorType: formData.vendorType,
       productsDescription: formData.productsDescription || null,
       businessDescription: formData.businessDescription || null,
+      productPhoto1Url: formData.productPhoto1Url || null,
+      productPhoto2Url: formData.productPhoto2Url || null,
+      productPhoto3Url: formData.productPhoto3Url || null,
+      productPhoto4Url: formData.productPhoto4Url || null,
+      productPhoto5Url: formData.productPhoto5Url || null,
+      insuranceDocUrl: formData.insuranceDocUrl || null,
+      taxDocUrl: formData.taxDocUrl || null,
       status: 'PENDING',
     },
   })

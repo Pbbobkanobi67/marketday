@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { CheckCircle2 } from 'lucide-react'
+import { ImageUpload } from '@/components/shared/ImageUpload'
+import { DocumentUpload } from '@/components/shared/DocumentUpload'
 
 const applicationSchema = z.object({
   businessName: z.string().min(1, 'Business name is required'),
@@ -33,6 +35,15 @@ const selectClass = 'flex h-8 w-full rounded-lg border border-input bg-transpare
 export default function ApplyPage() {
   const [isPending, startTransition] = useTransition()
   const [submitted, setSubmitted] = useState(false)
+
+  // Photo uploads (outside react-hook-form since they're not text fields)
+  const [productPhoto1, setProductPhoto1] = useState<string | null>(null)
+  const [productPhoto2, setProductPhoto2] = useState<string | null>(null)
+  const [productPhoto3, setProductPhoto3] = useState<string | null>(null)
+  const [productPhoto4, setProductPhoto4] = useState<string | null>(null)
+  const [productPhoto5, setProductPhoto5] = useState<string | null>(null)
+  const [insuranceDoc, setInsuranceDoc] = useState<string | null>(null)
+  const [taxDoc, setTaxDoc] = useState<string | null>(null)
 
   const {
     register,
@@ -56,7 +67,16 @@ export default function ApplyPage() {
 
   function onSubmit(data: ApplicationFormValues) {
     startTransition(async () => {
-      const result = await submitVendorApplication(data)
+      const result = await submitVendorApplication({
+        ...data,
+        productPhoto1Url: productPhoto1,
+        productPhoto2Url: productPhoto2,
+        productPhoto3Url: productPhoto3,
+        productPhoto4Url: productPhoto4,
+        productPhoto5Url: productPhoto5,
+        insuranceDocUrl: insuranceDoc,
+        taxDocUrl: taxDoc,
+      })
       if (result.success) {
         setSubmitted(true)
       }
@@ -182,6 +202,41 @@ export default function ApplyPage() {
               rows={3}
               {...register('businessDescription')}
             />
+          </div>
+
+          <Separator />
+
+          {/* Product Photos */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              Product Photos (optional)
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Upload up to 5 photos of your products. This helps us understand what you sell.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <ImageUpload label="Photo 1" value={productPhoto1} onChange={setProductPhoto1} uploadUrl="/api/upload/public" />
+              <ImageUpload label="Photo 2" value={productPhoto2} onChange={setProductPhoto2} uploadUrl="/api/upload/public" />
+              <ImageUpload label="Photo 3" value={productPhoto3} onChange={setProductPhoto3} uploadUrl="/api/upload/public" />
+              <ImageUpload label="Photo 4" value={productPhoto4} onChange={setProductPhoto4} uploadUrl="/api/upload/public" />
+              <ImageUpload label="Photo 5" value={productPhoto5} onChange={setProductPhoto5} uploadUrl="/api/upload/public" />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Required Documents */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              Required Documents
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Upload your insurance certificate and seller&apos;s permit or tax ID. Accepted formats: PDF, JPEG, PNG.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <DocumentUpload label="Insurance Certificate" value={insuranceDoc} onChange={setInsuranceDoc} />
+              <DocumentUpload label="Seller's Permit / Tax ID" value={taxDoc} onChange={setTaxDoc} />
+            </div>
           </div>
 
           <Separator />

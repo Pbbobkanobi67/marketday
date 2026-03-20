@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { vendorTypeLabel, cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, FileText } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import ApplicationActions from './ApplicationActions'
 
@@ -23,6 +23,19 @@ export default async function ApplicationDetailPage({
     APPROVED: 'bg-green-100 text-green-800',
     REJECTED: 'bg-red-100 text-red-800',
   }
+
+  const productPhotos = [
+    app.productPhoto1Url,
+    app.productPhoto2Url,
+    app.productPhoto3Url,
+    app.productPhoto4Url,
+    app.productPhoto5Url,
+  ].filter(Boolean) as string[]
+
+  const documents = [
+    { label: 'Insurance Certificate', url: app.insuranceDocUrl },
+    { label: "Seller's Permit / Tax ID", url: app.taxDocUrl },
+  ].filter((d) => d.url) as { label: string; url: string }[]
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -109,6 +122,45 @@ export default async function ApplicationDetailPage({
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Business Description</p>
             <p className="text-sm text-market-soil whitespace-pre-wrap">{app.businessDescription}</p>
+          </div>
+        )}
+
+        {/* Product Photos */}
+        {productPhotos.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Product Photos</p>
+            <div className="flex flex-wrap gap-2">
+              {productPhotos.map((url, i) => (
+                <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={url}
+                    alt={`Product photo ${i + 1}`}
+                    className="h-24 w-24 rounded-lg object-cover border border-market-stone/30 hover:ring-2 hover:ring-market-sage/50 transition-all"
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Documents */}
+        {documents.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Documents</p>
+            <div className="space-y-2">
+              {documents.map((doc) => (
+                <a
+                  key={doc.label}
+                  href={doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-market-sage hover:underline"
+                >
+                  <FileText className="h-4 w-4" />
+                  {doc.label}
+                </a>
+              ))}
+            </div>
           </div>
         )}
 

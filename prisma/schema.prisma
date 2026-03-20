@@ -99,6 +99,13 @@ model VendorApplication {
   pricingDescription  String?
   businessDescription String?
   boothImageUrl       String?
+  productPhoto1Url    String?
+  productPhoto2Url    String?
+  productPhoto3Url    String?
+  productPhoto4Url    String?
+  productPhoto5Url    String?
+  insuranceDocUrl     String?
+  taxDocUrl           String?
   status              String   @default("PENDING")
   adminNotes          String?
   createdAt           DateTime @default(now())

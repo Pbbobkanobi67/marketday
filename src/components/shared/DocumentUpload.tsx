@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, X, Loader2 } from 'lucide-react'
+import { Upload, X, Loader2, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-interface ImageUploadProps {
+interface DocumentUploadProps {
   label: string
   value?: string | null
   onChange: (url: string | null) => void
@@ -12,7 +12,17 @@ interface ImageUploadProps {
   className?: string
 }
 
-export function ImageUpload({ label, value, onChange, uploadUrl = '/api/upload', className }: ImageUploadProps) {
+function isPdf(url: string) {
+  return url.toLowerCase().includes('.pdf')
+}
+
+export function DocumentUpload({
+  label,
+  value,
+  onChange,
+  uploadUrl = '/api/upload/public',
+  className,
+}: DocumentUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -59,11 +69,18 @@ export function ImageUpload({ label, value, onChange, uploadUrl = '/api/upload',
 
       {value ? (
         <div className="relative inline-block">
-          <img
-            src={value}
-            alt={label}
-            className="h-32 w-32 rounded-lg object-cover border border-market-stone/30"
-          />
+          {isPdf(value) ? (
+            <div className="flex items-center gap-2 h-32 w-32 rounded-lg border border-market-stone/30 bg-muted/30 p-3">
+              <FileText className="h-8 w-8 text-market-sage shrink-0" />
+              <span className="text-xs text-muted-foreground truncate">PDF</span>
+            </div>
+          ) : (
+            <img
+              src={value}
+              alt={label}
+              className="h-32 w-32 rounded-lg object-cover border border-market-stone/30"
+            />
+          )}
           <button
             type="button"
             onClick={handleRemove}
@@ -93,7 +110,7 @@ export function ImageUpload({ label, value, onChange, uploadUrl = '/api/upload',
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
         onChange={handleFileChange}
         className="hidden"
       />
