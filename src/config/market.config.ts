@@ -43,11 +43,26 @@ export const MARKET_CONFIG = {
 
   // --- Categories (product-level grouping) ----------------
   categories: [
-    { value: 'certified_farmer', label: 'Certified Farmer', emoji: '🌾' },
-    { value: 'artisan_craft', label: 'Artisan & Craft', emoji: '🎨' },
-    { value: 'hot_food', label: 'Hot Food', emoji: '🍲' },
+    // Food & Beverage
+    { value: 'fresh_produce', label: 'Fresh Produce', emoji: '🥬' },
+    { value: 'eggs_dairy', label: 'Eggs & Dairy', emoji: '🥚' },
+    { value: 'honey_preserves', label: 'Honey & Preserves', emoji: '🍯' },
     { value: 'baked', label: 'Baked Goods', emoji: '🍞' },
+    { value: 'hot_food', label: 'Hot Food', emoji: '🍲' },
     { value: 'specialty', label: 'Specialty Food', emoji: '🫙' },
+    { value: 'beverages', label: 'Beverages', emoji: '☕' },
+    // Artisan & Handmade
+    { value: 'candles', label: 'Candles', emoji: '🕯️' },
+    { value: 'wax_melts', label: 'Wax Melts', emoji: '🫠' },
+    { value: 'car_freshies', label: 'Car Freshies', emoji: '🚗' },
+    { value: 'bath_body', label: 'Bath & Body', emoji: '🧼' },
+    { value: 'jewelry', label: 'Jewelry', emoji: '💍' },
+    { value: 'clothing', label: 'Clothing & Accessories', emoji: '👗' },
+    { value: 'plants', label: 'Plants & Flowers', emoji: '🌱' },
+    { value: 'art_ceramics', label: 'Art & Ceramics', emoji: '🎨' },
+    { value: 'pet_supplies', label: 'Pet Supplies', emoji: '🐾' },
+    { value: 'home_decor', label: 'Home & Decor', emoji: '🏡' },
+    { value: 'handmade', label: 'Handmade Goods', emoji: '🧶' },
     { value: 'nonprofit', label: 'Nonprofit', emoji: '💛' },
   ],
 
