@@ -16,6 +16,7 @@ type ProductCardProduct = {
   unit: string
   category: string
   isAvailable: boolean
+  quantity?: number
   vendor: {
     name: string
     slug: string
@@ -34,7 +35,11 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
   const [state, setState] = useState<CardState>('idle')
 
   const existingItem = cart.items.find((i) => i.productId === product.id)
-  const quantity = existingItem?.quantity ?? 0
+  const cartQty = existingItem?.quantity ?? 0
+  const stockTracked = product.quantity != null && product.quantity > 0
+  const maxQty = stockTracked ? product.quantity! : Infinity
+  const atMax = cartQty >= maxQty
+  const lowStock = stockTracked && product.quantity! <= 5
 
   useEffect(() => {
     if (state === 'added') {
@@ -44,11 +49,12 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
   }, [state])
 
   function handleAddToBag() {
-    if (!product.isAvailable) return
+    if (!product.isAvailable || atMax) return
     setState('adding')
   }
 
   function handleConfirmAdd() {
+    if (atMax) return
     addItem({
       productId: product.id,
       productName: product.name,
@@ -63,15 +69,16 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
   }
 
   function handleIncrement() {
-    updateQuantity(product.id, quantity + 1)
+    if (atMax) return
+    updateQuantity(product.id, cartQty + 1)
   }
 
   function handleDecrement() {
-    if (quantity <= 1) {
+    if (cartQty <= 1) {
       removeItem(product.id)
       setState('idle')
     } else {
-      updateQuantity(product.id, quantity - 1)
+      updateQuantity(product.id, cartQty - 1)
     }
   }
 
@@ -115,6 +122,13 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
               Sold Out
             </span>
           )}
+
+          {/* Low stock badge */}
+          {!soldOut && lowStock && (
+            <span className="absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+              {product.quantity} left
+            </span>
+          )}
         </div>
       </Link>
 
@@ -152,11 +166,14 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
           </div>
 
           {/* State: idle */}
-          {state === 'idle' && quantity === 0 && (
+          {state === 'idle' && cartQty === 0 && (
             <button
               onClick={handleAddToBag}
-              disabled={soldOut}
-              className="btn-primary flex items-center gap-1.5 !px-3 !py-2 text-xs"
+              disabled={soldOut || atMax}
+              className={cn(
+                'btn-primary flex items-center gap-1.5 !px-3 !py-2 text-xs',
+                atMax && 'opacity-50 cursor-not-allowed'
+              )}
               aria-label={`Add ${product.name} to bag`}
             >
               <ShoppingBag className="w-3.5 h-3.5" />
@@ -165,7 +182,7 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
           )}
 
           {/* State: idle but has items in cart */}
-          {state === 'idle' && quantity > 0 && (
+          {state === 'idle' && cartQty > 0 && (
             <div className="flex items-center gap-2">
               <button
                 onClick={handleDecrement}
@@ -175,11 +192,15 @@ export default function ProductCard({ product, showVendor = false }: ProductCard
                 <Minus className="w-3.5 h-3.5" />
               </button>
               <span className="text-sm font-medium text-market-soil w-5 text-center tabular-nums">
-                {quantity}
+                {cartQty}
               </span>
               <button
                 onClick={handleIncrement}
-                className="flex items-center justify-center w-8 h-8 rounded-md bg-market-sage hover:bg-market-sage-dk text-white transition-colors"
+                disabled={atMax}
+                className={cn(
+                  'flex items-center justify-center w-8 h-8 rounded-md bg-market-sage hover:bg-market-sage-dk text-white transition-colors',
+                  atMax && 'opacity-50 cursor-not-allowed'
+                )}
                 aria-label={`Increase quantity of ${product.name}`}
               >
                 <Plus className="w-3.5 h-3.5" />

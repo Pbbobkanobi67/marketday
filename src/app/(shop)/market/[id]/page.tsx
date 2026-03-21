@@ -58,6 +58,7 @@ export default async function MarketPage({
     unit: p.unit,
     category: p.category,
     isAvailable: p.isAvailable,
+    quantity: p.quantity,
     vendorId: p.vendorId,
     vendor: {
       name: p.vendor.name,

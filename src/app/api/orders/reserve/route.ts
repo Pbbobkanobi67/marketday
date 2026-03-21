@@ -33,6 +33,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'One or more products are unavailable' }, { status: 400 })
     }
 
+    // Stock validation: quantity > 0 means tracked inventory
+    const stockErrors: { productId: string; productName: string; available: number; requested: number }[] = []
+    for (const item of data.items) {
+      const product = products.find((p) => p.id === item.productId)!
+      if (product.quantity > 0 && item.quantity > product.quantity) {
+        stockErrors.push({
+          productId: product.id,
+          productName: product.name,
+          available: product.quantity,
+          requested: item.quantity,
+        })
+      }
+    }
+    if (stockErrors.length > 0) {
+      return NextResponse.json(
+        { error: 'Insufficient stock', details: stockErrors },
+        { status: 409 }
+      )
+    }
+
     const subtotal = data.items.reduce((sum, item) => {
       const product = products.find((p) => p.id === item.productId)!
       return sum + product.price * item.quantity
@@ -70,6 +90,17 @@ export async function POST(req: NextRequest) {
       },
       include: { items: true, market: true },
     })
+
+    // Decrement stock for tracked products (quantity > 0)
+    for (const item of data.items) {
+      const product = products.find((p) => p.id === item.productId)!
+      if (product.quantity > 0) {
+        await prisma.product.update({
+          where: { id: product.id },
+          data: { quantity: { decrement: item.quantity } },
+        })
+      }
+    }
 
     // Send confirmation email (non-blocking, fail silently in dev)
     if (resend) {

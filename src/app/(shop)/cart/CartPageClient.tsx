@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Minus, Plus, X, CreditCard, Coins, ShoppingBag, ArrowRight } from 'lucide-react'
+import { Minus, Plus, X, CreditCard, Coins, ShoppingBag, ArrowRight, ArrowLeft } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { formatPrice, formatMarketDate, formatMarketDateShort, cn } from '@/lib/utils'
 
@@ -24,7 +24,25 @@ type PaymentMethod = 'STRIPE' | 'AT_MARKET' | null
 export default function CartPageClient({ markets }: { markets: SerializedMarket[] }) {
   const { cart, updateQuantity, removeItem, setMarket, itemCount, subtotal } = useCart()
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(cart.marketId)
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null)
+  const [paymentMethod, setPaymentMethodState] = useState<PaymentMethod>(null)
+
+  // Load persisted payment method on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('backroads-payment-method')
+      if (saved === 'STRIPE' || saved === 'AT_MARKET') {
+        setPaymentMethodState(saved)
+      }
+    } catch {}
+  }, [])
+
+  function setPaymentMethod(method: PaymentMethod) {
+    setPaymentMethodState(method)
+    try {
+      if (method) localStorage.setItem('backroads-payment-method', method)
+      else localStorage.removeItem('backroads-payment-method')
+    } catch {}
+  }
 
   function handleSelectMarket(marketId: string) {
     setSelectedMarketId(marketId)
@@ -72,8 +90,17 @@ export default function CartPageClient({ markets }: { markets: SerializedMarket[
     )
   }
 
+  const continueShoppingHref = cart.marketId ? `/market/${cart.marketId}` : '/'
+
   return (
     <section className="container-market py-10">
+      <Link
+        href={continueShoppingHref}
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-market-sage hover:text-market-sage-dk transition-colors mb-4"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Continue Shopping
+      </Link>
       <h1 className="font-display text-3xl font-bold text-market-soil mb-8">
         Your Market Bag
       </h1>

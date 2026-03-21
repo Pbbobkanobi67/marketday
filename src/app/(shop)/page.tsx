@@ -253,7 +253,7 @@ export default async function HomePage() {
 
           {markets.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {markets.slice(0, 3).map((market) => (
+              {markets.slice(0, 3).map((market, index) => (
                 <div
                   key={market.id}
                   className="card-market p-6 flex flex-col gap-4"
@@ -284,13 +284,23 @@ export default async function HomePage() {
                   </div>
 
                   <div className="flex items-center justify-between mt-auto">
-                    <Link
-                      href={`/market/${market.id}`}
-                      className="text-sm font-medium text-market-sage hover:text-market-sage-dk transition-colors inline-flex items-center gap-1"
-                    >
-                      Shop This Market
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    {index === 0 ? (
+                      <Link
+                        href={`/market/${market.id}`}
+                        className="btn-primary inline-flex items-center gap-2 text-sm"
+                      >
+                        Shop This Market
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/market/${market.id}`}
+                        className="text-sm font-medium text-market-sage hover:text-market-sage-dk transition-colors inline-flex items-center gap-1"
+                      >
+                        Shop This Market
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    )}
                     <a
                       href={`/api/calendar/${market.id}`}
                       download
