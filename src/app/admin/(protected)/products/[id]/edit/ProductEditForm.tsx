@@ -33,6 +33,7 @@ const productSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   vendorId: z.string().min(1, 'Vendor is required'),
   isAvailable: z.boolean(),
+  isComingSoon: z.boolean(),
 })
 
 type ProductFormValues = z.infer<typeof productSchema>
@@ -48,6 +49,7 @@ interface ProductEditFormProps {
     category: string
     vendorId: string
     isAvailable: boolean
+    isComingSoon: boolean
   }
   vendors: { id: string; name: string }[]
 }
@@ -72,10 +74,12 @@ export function ProductEditForm({ product, vendors }: ProductEditFormProps) {
       category: product.category,
       vendorId: product.vendorId,
       isAvailable: product.isAvailable,
+      isComingSoon: product.isComingSoon,
     },
   })
 
   const isAvailable = watch('isAvailable')
+  const isComingSoon = watch('isComingSoon')
 
   function onNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     const name = e.target.value
@@ -95,6 +99,7 @@ export function ProductEditForm({ product, vendors }: ProductEditFormProps) {
         category: data.category,
         vendorId: data.vendorId,
         isAvailable: data.isAvailable,
+        isComingSoon: data.isComingSoon,
       })
     })
   }
@@ -240,17 +245,33 @@ export function ProductEditForm({ product, vendors }: ProductEditFormProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="isAvailable"
-            checked={isAvailable}
-            onCheckedChange={(checked) =>
-              setValue('isAvailable', checked === true)
-            }
-          />
-          <Label htmlFor="isAvailable" className="cursor-pointer">
-            Available for purchase
-          </Label>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="isAvailable"
+              checked={isAvailable}
+              onCheckedChange={(checked) => {
+                setValue('isAvailable', checked === true)
+                if (checked) setValue('isComingSoon', false)
+              }}
+            />
+            <Label htmlFor="isAvailable" className="cursor-pointer">
+              Available for purchase
+            </Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="isComingSoon"
+              checked={isComingSoon}
+              onCheckedChange={(checked) => {
+                setValue('isComingSoon', checked === true)
+                if (checked) setValue('isAvailable', false)
+              }}
+            />
+            <Label htmlFor="isComingSoon" className="cursor-pointer">
+              Coming soon
+            </Label>
+          </div>
         </div>
 
         <Separator />

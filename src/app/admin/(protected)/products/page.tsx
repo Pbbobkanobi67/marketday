@@ -1,32 +1,23 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
-import { formatPrice, categoryLabel, categoryColor, cn } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import SearchBar from '@/components/admin/SearchBar'
 import FilterPills from '@/components/admin/FilterPills'
 import { MARKET_CONFIG } from '@/config/market.config'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import ProductRowActions from '@/components/admin/ProductRowActions'
+import CollapsibleVendorProducts from '@/components/admin/CollapsibleVendorProducts'
 
 export default async function AdminProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; available?: string; vendor?: string }>
+  searchParams: Promise<{ q?: string; category?: string; status?: string; vendor?: string }>
 }) {
   const params = await searchParams
   const q = params.q || ''
   const categoryFilter = params.category || ''
-  const availableFilter = params.available || ''
+  const statusFilter = params.status || ''
   const vendorFilter = params.vendor || ''
 
   const where: Prisma.ProductWhereInput = {}
@@ -36,10 +27,13 @@ export default async function AdminProductsPage({
   if (categoryFilter) {
     where.category = categoryFilter
   }
-  if (availableFilter === 'yes') {
+  if (statusFilter === 'available') {
     where.isAvailable = true
-  } else if (availableFilter === 'no') {
+  } else if (statusFilter === 'unavailable') {
     where.isAvailable = false
+    where.isComingSoon = false
+  } else if (statusFilter === 'coming_soon') {
+    where.isComingSoon = true
   }
   if (vendorFilter) {
     where.vendorId = vendorFilter
@@ -50,7 +44,7 @@ export default async function AdminProductsPage({
     prisma.product.findMany({
       where,
       include: { vendor: { select: { id: true, name: true } } },
-      orderBy: { name: 'asc' },
+      orderBy: [{ vendor: { name: 'asc' } }, { name: 'asc' }],
     }),
     prisma.vendor.findMany({
       where: { products: { some: {} } },
@@ -59,13 +53,43 @@ export default async function AdminProductsPage({
     }),
   ])
 
+  // Group products by vendor
+  const vendorGroupMap = new Map<string, { vendorId: string; vendorName: string; products: typeof products }>()
+  for (const product of products) {
+    const existing = vendorGroupMap.get(product.vendor.id)
+    if (existing) {
+      existing.products.push(product)
+    } else {
+      vendorGroupMap.set(product.vendor.id, {
+        vendorId: product.vendor.id,
+        vendorName: product.vendor.name,
+        products: [product],
+      })
+    }
+  }
+  const vendorGroups = Array.from(vendorGroupMap.values()).map((g) => ({
+    vendorId: g.vendorId,
+    vendorName: g.vendorName,
+    products: g.products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      unit: p.unit,
+      category: p.category,
+      isAvailable: p.isAvailable,
+      isComingSoon: p.isComingSoon,
+    })),
+  }))
+
+  const hasFilters = q || categoryFilter || statusFilter || vendorFilter
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Products</h1>
           <p className="text-sm text-muted-foreground">
-            {products.length} product{products.length !== 1 ? 's' : ''}{q || categoryFilter || availableFilter || vendorFilter ? ' matching filters' : ' total'}
+            {products.length} product{products.length !== 1 ? 's' : ''}{hasFilters ? ' matching filters' : ' total'}
           </p>
         </div>
         <Button render={<Link href="/admin/products/new" />}>
@@ -93,12 +117,13 @@ export default async function AdminProductsPage({
             />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Available:</span>
+            <span className="text-xs font-medium text-muted-foreground">Status:</span>
             <FilterPills
-              paramName="available"
+              paramName="status"
               options={[
-                { value: 'yes', label: 'Available' },
-                { value: 'no', label: 'Unavailable' },
+                { value: 'available', label: 'Available' },
+                { value: 'unavailable', label: 'Not Available' },
+                { value: 'coming_soon', label: 'Coming Soon' },
               ]}
             />
           </div>
@@ -122,62 +147,7 @@ export default async function AdminProductsPage({
           </Button>
         </div>
       ) : (
-        <div className="overflow-x-auto -mx-1">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Vendor</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Unit</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead className="text-center">Available</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {product.vendor.name}
-                </TableCell>
-                <TableCell>{formatPrice(product.price)}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {product.unit}
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={cn(
-                      'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
-                      categoryColor(product.category)
-                    )}
-                  >
-                    {categoryLabel(product.category)}
-                  </span>
-                </TableCell>
-                <TableCell className="text-center">
-                  <span className="inline-flex items-center gap-1.5 text-xs">
-                    <span
-                      className={cn(
-                        'inline-block h-2 w-2 rounded-full',
-                        product.isAvailable ? 'bg-green-500' : 'bg-gray-400'
-                      )}
-                    />
-                    {product.isAvailable ? 'Yes' : 'No'}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right">
-                  <ProductRowActions
-                    productId={product.id}
-                    productName={product.name}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        </div>
+        <CollapsibleVendorProducts groups={vendorGroups} />
       )}
     </div>
   )

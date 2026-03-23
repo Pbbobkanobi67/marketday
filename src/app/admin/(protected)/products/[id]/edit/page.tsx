@@ -32,6 +32,7 @@ export default async function EditProductPage({
         category: product.category,
         vendorId: product.vendorId,
         isAvailable: product.isAvailable,
+        isComingSoon: product.isComingSoon,
       }}
       vendors={vendors}
     />

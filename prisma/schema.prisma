@@ -145,8 +145,9 @@ model Product {
   unit        String
   category    String
   quantity    Int         @default(0)
-  isAvailable Boolean     @default(true)
-  vendorId    String
+  isAvailable  Boolean     @default(true)
+  isComingSoon Boolean     @default(false)
+  vendorId     String
   vendor      Vendor      @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   orderItems  OrderItem[]
   createdAt   DateTime    @default(now())

@@ -13,6 +13,7 @@ export async function createProduct(formData: {
   category: string
   vendorId: string
   isAvailable: boolean
+  isComingSoon: boolean
 }) {
   await prisma.product.create({ data: formData })
   revalidatePath('/admin/products')
@@ -42,6 +43,7 @@ export async function updateProduct(
     category: string
     vendorId: string
     isAvailable: boolean
+    isComingSoon: boolean
   }
 ) {
   await prisma.product.update({ where: { id }, data: formData })
