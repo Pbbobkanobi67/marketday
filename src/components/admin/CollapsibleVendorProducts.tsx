@@ -116,10 +116,10 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
   const thButton = 'flex items-center text-left cursor-pointer select-none hover:text-foreground transition-colors'
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-2.5">
         <div className="flex items-center gap-3">
-          <span className="text-xs font-medium text-muted-foreground">Sort by:</span>
+          <span className="text-sm font-semibold text-foreground w-20 shrink-0">Sort by</span>
           {(['vendor', 'name', 'price', 'category', 'status'] as SortKey[]).map((key) => {
             const labels: Record<SortKey, string> = { vendor: 'Vendor', name: 'Name', price: 'Price', category: 'Category', status: 'Status' }
             return (

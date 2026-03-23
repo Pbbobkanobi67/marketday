@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import SearchBar from '@/components/admin/SearchBar'
 import FilterPills from '@/components/admin/FilterPills'
 import { MARKET_CONFIG } from '@/config/market.config'
@@ -99,25 +98,26 @@ export default async function AdminProductsPage({
       </div>
 
       {/* Search & Filters */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <SearchBar placeholder="Search products by name..." />
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Vendor:</span>
+
+        <div className="rounded-lg border bg-muted/30 divide-y divide-border">
+          <div className="flex items-center gap-3 px-4 py-2.5">
+            <span className="text-sm font-semibold text-foreground w-20 shrink-0">Vendor</span>
             <FilterPills
               paramName="vendor"
               options={vendors.map((v) => ({ value: v.id, label: v.name }))}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Category:</span>
+          <div className="flex items-center gap-3 px-4 py-2.5">
+            <span className="text-sm font-semibold text-foreground w-20 shrink-0">Category</span>
             <FilterPills
               paramName="category"
               options={MARKET_CONFIG.categories.map((c) => ({ value: c.value, label: c.label }))}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Status:</span>
+          <div className="flex items-center gap-3 px-4 py-2.5">
+            <span className="text-sm font-semibold text-foreground w-20 shrink-0">Status</span>
             <FilterPills
               paramName="status"
               options={[
@@ -129,8 +129,6 @@ export default async function AdminProductsPage({
           </div>
         </div>
       </div>
-
-      <Separator />
 
       {products.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">

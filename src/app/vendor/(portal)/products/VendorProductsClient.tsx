@@ -288,78 +288,86 @@ export function VendorProductsClient({
 
       <Separator />
 
-      {/* Search & Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-8 h-8"
-          />
-        </div>
-        <select
-          className={selectClass}
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {MARKET_CONFIG.categories.map((cat) => (
-            <option key={cat.value} value={cat.value}>
-              {cat.label}
-            </option>
-          ))}
-        </select>
-        <div className="flex items-center gap-1 rounded-lg border p-0.5">
-          {statusOptions.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => setStatusFilter(opt.value)}
-              className={cn(
-                'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
-                statusFilter === opt.value
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+      {/* Search */}
+      <div className="relative max-w-sm">
+        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="Search products..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-8 h-8"
+        />
       </div>
 
-      {/* Sort pills */}
-      <div className="flex items-center gap-3">
-        <span className="text-xs font-medium text-muted-foreground">Sort by:</span>
-        {(['name', 'price', 'category', 'status'] as SortKey[]).map((key) => {
-          const labels: Record<SortKey, string> = { name: 'Name', price: 'Price', category: 'Category', status: 'Status' }
-          return (
-            <button
-              key={key}
-              onClick={() => handleSort(key)}
-              className={cn(
-                'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
-                sortKey === key
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:text-foreground'
-              )}
-            >
-              {labels[key]}
-              {sortKey === key && (
-                sortDir === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-              )}
-            </button>
-          )
-        })}
-        {sortKey && (
-          <button
-            onClick={() => { setSortKey(null); setSortDir('asc') }}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+      {/* Filters & Sort */}
+      <div className="rounded-lg border bg-muted/30 divide-y divide-border">
+        <div className="flex items-center gap-3 px-4 py-2.5">
+          <span className="text-sm font-semibold text-foreground w-20 shrink-0">Category</span>
+          <select
+            className={selectClass}
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
           >
-            Clear
-          </button>
-        )}
+            <option value="">All Categories</option>
+            {MARKET_CONFIG.categories.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center gap-3 px-4 py-2.5">
+          <span className="text-sm font-semibold text-foreground w-20 shrink-0">Status</span>
+          <div className="flex items-center gap-1 rounded-lg border bg-background p-0.5">
+            {statusOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setStatusFilter(opt.value)}
+                className={cn(
+                  'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
+                  statusFilter === opt.value
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center gap-3 px-4 py-2.5">
+          <span className="text-sm font-semibold text-foreground w-20 shrink-0">Sort by</span>
+          <div className="flex items-center gap-2">
+            {(['name', 'price', 'category', 'status'] as SortKey[]).map((key) => {
+              const labels: Record<SortKey, string> = { name: 'Name', price: 'Price', category: 'Category', status: 'Status' }
+              return (
+                <button
+                  key={key}
+                  onClick={() => handleSort(key)}
+                  className={cn(
+                    'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
+                    sortKey === key
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-muted-foreground hover:text-foreground border'
+                  )}
+                >
+                  {labels[key]}
+                  {sortKey === key && (
+                    sortDir === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                  )}
+                </button>
+              )
+            })}
+            {sortKey && (
+              <button
+                onClick={() => { setSortKey(null); setSortDir('asc') }}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Bulk action bar */}
