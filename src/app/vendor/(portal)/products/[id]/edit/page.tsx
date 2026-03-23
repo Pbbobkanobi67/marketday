@@ -30,6 +30,7 @@ export default async function VendorEditProductPage({ params }: Props) {
         unit: product.unit,
         category: product.category,
         isAvailable: product.isAvailable,
+        isComingSoon: product.isComingSoon,
         imageUrl: product.imageUrl,
       }}
     />

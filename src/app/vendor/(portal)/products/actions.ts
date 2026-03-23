@@ -24,6 +24,7 @@ export async function createVendorProduct(formData: {
   unit: string
   category: string
   isAvailable: boolean
+  isComingSoon: boolean
   quantity: number
   imageUrl: string | null
 }) {
@@ -50,6 +51,7 @@ export async function updateVendorProduct(
     unit: string
     category: string
     isAvailable: boolean
+    isComingSoon: boolean
     quantity: number
     imageUrl: string | null
   }
@@ -102,6 +104,7 @@ export async function bulkCreateVendorProducts(
     category: string
     quantity: number
     isAvailable: boolean
+    imageUrl?: string | null
   }[]
 ): Promise<{ created: number; errors: { index: number; name: string; error: string }[] }> {
   const vendorId = await getVendorId()
@@ -127,6 +130,7 @@ export async function bulkCreateVendorProducts(
           category: p.category,
           quantity: p.quantity,
           isAvailable: p.isAvailable,
+          imageUrl: p.imageUrl ?? null,
           slug,
           vendorId,
         },

@@ -10,6 +10,9 @@ import {
   Download,
   Upload,
   FileDown,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -40,19 +43,49 @@ interface SerializedProduct {
   category: string
   quantity: number
   isAvailable: boolean
+  isComingSoon: boolean
   vendorId: string
   createdAt: string
   updatedAt: string
 }
 
-const CSV_HEADERS = ['name', 'description', 'price', 'unit', 'category', 'quantity', 'available']
+const CSV_HEADERS = ['name', 'description', 'price', 'unit', 'category', 'quantity', 'available', 'image_url']
 
 const TEMPLATE_ROWS = [
-  ['Organic Heirloom Tomatoes', 'Vine-ripened heirloom tomatoes, locally grown', '4.50', 'lb', 'certified_farmer', '20', 'yes'],
-  ['Sourdough Bread', 'Fresh baked sourdough loaf', '8.00', 'loaf', 'baked', '10', 'yes'],
+  ['Organic Heirloom Tomatoes', 'Vine-ripened heirloom tomatoes, locally grown', '4.50', 'lb', 'certified_farmer', '20', 'yes', 'https://example.com/tomatoes.jpg'],
+  ['Sourdough Bread', 'Fresh baked sourdough loaf', '8.00', 'loaf', 'baked', '10', 'yes', ''],
 ]
 
-type AvailabilityFilter = 'all' | 'available' | 'unavailable'
+type StatusFilter = 'all' | 'available' | 'unavailable' | 'coming_soon'
+type SortKey = 'name' | 'price' | 'category' | 'status'
+type SortDir = 'asc' | 'desc'
+
+function statusLabel(p: SerializedProduct) {
+  if (p.isComingSoon) return 'Coming Soon'
+  if (p.isAvailable) return 'Available'
+  return 'Not Available'
+}
+
+function statusDotColor(p: SerializedProduct) {
+  if (p.isComingSoon) return 'bg-amber-500'
+  if (p.isAvailable) return 'bg-green-500'
+  return 'bg-gray-400'
+}
+
+function statusRank(p: SerializedProduct) {
+  if (p.isAvailable) return 0
+  if (p.isComingSoon) return 1
+  return 2
+}
+
+function SortIcon({ column, activeSort, activeDir }: { column: SortKey; activeSort: SortKey | null; activeDir: SortDir }) {
+  if (activeSort !== column) {
+    return <ArrowUpDown className="ml-1 inline h-3 w-3 text-muted-foreground/50" />
+  }
+  return activeDir === 'asc'
+    ? <ArrowUp className="ml-1 inline h-3 w-3 text-foreground" />
+    : <ArrowDown className="ml-1 inline h-3 w-3 text-foreground" />
+}
 
 export function VendorProductsClient({
   products,
@@ -63,23 +96,47 @@ export function VendorProductsClient({
   const [isPending, startTransition] = useTransition()
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
-  const [availFilter, setAvailFilter] = useState<AvailabilityFilter>('all')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [sortKey, setSortKey] = useState<SortKey | null>(null)
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [importOpen, setImportOpen] = useState(false)
   const [importCsv, setImportCsv] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+  }
+
   const filtered = useMemo(() => {
     return products.filter((p) => {
       if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false
       if (categoryFilter && p.category !== categoryFilter) return false
-      if (availFilter === 'available' && !p.isAvailable) return false
-      if (availFilter === 'unavailable' && p.isAvailable) return false
+      if (statusFilter === 'available' && !p.isAvailable) return false
+      if (statusFilter === 'unavailable' && (p.isAvailable || p.isComingSoon)) return false
+      if (statusFilter === 'coming_soon' && !p.isComingSoon) return false
       return true
     })
-  }, [products, search, categoryFilter, availFilter])
+  }, [products, search, categoryFilter, statusFilter])
 
-  const filteredIds = useMemo(() => new Set(filtered.map((p) => p.id)), [filtered])
+  const sorted = useMemo(() => {
+    if (!sortKey) return filtered
+    return [...filtered].sort((a, b) => {
+      let cmp = 0
+      if (sortKey === 'name') cmp = a.name.localeCompare(b.name)
+      else if (sortKey === 'price') cmp = a.price - b.price
+      else if (sortKey === 'category') cmp = categoryLabel(a.category).localeCompare(categoryLabel(b.category))
+      else if (sortKey === 'status') cmp = statusRank(a) - statusRank(b)
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [filtered, sortKey, sortDir])
+
+  const filteredIds = useMemo(() => new Set(sorted.map((p) => p.id)), [sorted])
 
   // Only keep selected items that are visible
   const activeSelected = useMemo(
@@ -88,19 +145,19 @@ export function VendorProductsClient({
   )
 
   const allVisibleSelected =
-    filtered.length > 0 && filtered.every((p) => selected.has(p.id))
+    sorted.length > 0 && sorted.every((p) => selected.has(p.id))
 
   function toggleSelectAll() {
     if (allVisibleSelected) {
       setSelected((prev) => {
         const next = new Set(prev)
-        filtered.forEach((p) => next.delete(p.id))
+        sorted.forEach((p) => next.delete(p.id))
         return next
       })
     } else {
       setSelected((prev) => {
         const next = new Set(prev)
-        filtered.forEach((p) => next.add(p.id))
+        sorted.forEach((p) => next.add(p.id))
         return next
       })
     }
@@ -134,7 +191,8 @@ export function VendorProductsClient({
       p.unit,
       p.category,
       p.quantity.toString(),
-      p.isAvailable ? 'yes' : 'no',
+      p.isComingSoon ? 'coming_soon' : p.isAvailable ? 'yes' : 'no',
+      p.imageUrl || '',
     ])
     const date = new Date().toISOString().slice(0, 10)
     downloadCsv(`products-${date}.csv`, CSV_HEADERS, rows)
@@ -184,6 +242,15 @@ export function VendorProductsClient({
 
   const selectClass =
     'flex h-8 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
+
+  const thButton = 'flex items-center text-left cursor-pointer select-none hover:text-foreground transition-colors'
+
+  const statusOptions: { value: StatusFilter; label: string }[] = [
+    { value: 'all', label: 'All' },
+    { value: 'available', label: 'Available' },
+    { value: 'unavailable', label: 'Not Available' },
+    { value: 'coming_soon', label: 'Coming Soon' },
+  ]
 
   return (
     <div className="space-y-6">
@@ -245,21 +312,54 @@ export function VendorProductsClient({
           ))}
         </select>
         <div className="flex items-center gap-1 rounded-lg border p-0.5">
-          {(['all', 'available', 'unavailable'] as const).map((val) => (
+          {statusOptions.map((opt) => (
             <button
-              key={val}
-              onClick={() => setAvailFilter(val)}
+              key={opt.value}
+              onClick={() => setStatusFilter(opt.value)}
               className={cn(
                 'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
-                availFilter === val
+                statusFilter === opt.value
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              {val === 'all' ? 'All' : val === 'available' ? 'Available' : 'Unavailable'}
+              {opt.label}
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Sort pills */}
+      <div className="flex items-center gap-3">
+        <span className="text-xs font-medium text-muted-foreground">Sort by:</span>
+        {(['name', 'price', 'category', 'status'] as SortKey[]).map((key) => {
+          const labels: Record<SortKey, string> = { name: 'Name', price: 'Price', category: 'Category', status: 'Status' }
+          return (
+            <button
+              key={key}
+              onClick={() => handleSort(key)}
+              className={cn(
+                'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
+                sortKey === key
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {labels[key]}
+              {sortKey === key && (
+                sortDir === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+              )}
+            </button>
+          )
+        })}
+        {sortKey && (
+          <button
+            onClick={() => { setSortKey(null); setSortDir('asc') }}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       {/* Bulk action bar */}
@@ -313,7 +413,7 @@ export function VendorProductsClient({
             Add Product
           </Button>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : sorted.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
           <p className="text-sm text-muted-foreground">
             No products match your filters.
@@ -333,17 +433,33 @@ export function VendorProductsClient({
                   />
                 </TableHead>
                 <TableHead className="w-12"></TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>
+                  <button onClick={() => handleSort('name')} className={thButton}>
+                    Name <SortIcon column="name" activeSort={sortKey} activeDir={sortDir} />
+                  </button>
+                </TableHead>
+                <TableHead>
+                  <button onClick={() => handleSort('price')} className={thButton}>
+                    Price <SortIcon column="price" activeSort={sortKey} activeDir={sortDir} />
+                  </button>
+                </TableHead>
                 <TableHead>Unit</TableHead>
                 <TableHead className="text-center">Qty</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-center">Status</TableHead>
+                <TableHead>
+                  <button onClick={() => handleSort('category')} className={thButton}>
+                    Category <SortIcon column="category" activeSort={sortKey} activeDir={sortDir} />
+                  </button>
+                </TableHead>
+                <TableHead className="text-center">
+                  <button onClick={() => handleSort('status')} className={cn(thButton, 'justify-center w-full')}>
+                    Status <SortIcon column="status" activeSort={sortKey} activeDir={sortDir} />
+                  </button>
+                </TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((product) => (
+              {sorted.map((product) => (
                 <TableRow
                   key={product.id}
                   className={cn(
@@ -392,10 +508,10 @@ export function VendorProductsClient({
                       <span
                         className={cn(
                           'inline-block h-2 w-2 rounded-full',
-                          product.isAvailable ? 'bg-green-500' : 'bg-gray-400'
+                          statusDotColor(product)
                         )}
                       />
-                      {product.isAvailable ? 'Available' : 'Unavailable'}
+                      {statusLabel(product)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
