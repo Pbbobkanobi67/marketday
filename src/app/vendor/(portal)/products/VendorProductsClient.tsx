@@ -28,6 +28,7 @@ import {
 import { cn, formatPrice, categoryLabel, categoryColor } from '@/lib/utils'
 import { MARKET_CONFIG } from '@/config/market.config'
 import { generateCSV } from '@/lib/csv'
+import { useResizableColumns } from '@/hooks/useResizableColumns'
 import { VendorProductDeleteButton } from './VendorProductDeleteButton'
 import { VendorProductImportDialog } from './VendorProductImportDialog'
 import { bulkToggleAvailability, bulkDeleteVendorProducts } from './actions'
@@ -87,6 +88,29 @@ function SortIcon({ column, activeSort, activeDir }: { column: SortKey; activeSo
     : <ArrowDown className="ml-1 inline h-3 w-3 text-foreground" />
 }
 
+const VENDOR_COLS = {
+  checkbox: 40,
+  image: 48,
+  name: 180,
+  price: 90,
+  unit: 70,
+  qty: 60,
+  category: 130,
+  status: 120,
+  actions: 80,
+}
+
+function ResizeHandle({ col, onMouseDown }: { col: string; onMouseDown: (col: string, e: React.MouseEvent) => void }) {
+  return (
+    <div
+      onMouseDown={(e) => onMouseDown(col, e)}
+      className="absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize group hover:bg-primary/20 active:bg-primary/40"
+    >
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 h-4 w-px bg-border group-hover:bg-primary/60" />
+    </div>
+  )
+}
+
 export function VendorProductsClient({
   products,
 }: {
@@ -94,6 +118,7 @@ export function VendorProductsClient({
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const { widths, onMouseDown } = useResizableColumns(VENDOR_COLS)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
@@ -429,10 +454,10 @@ export function VendorProductsClient({
         </div>
       ) : (
         <div className="overflow-x-auto -mx-1">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-10">
+                <TableHead style={{ width: widths.checkbox }}>
                   <input
                     type="checkbox"
                     checked={allVisibleSelected}
@@ -440,30 +465,40 @@ export function VendorProductsClient({
                     className="rounded border-gray-300"
                   />
                 </TableHead>
-                <TableHead className="w-12"></TableHead>
-                <TableHead>
+                <TableHead style={{ width: widths.image }}></TableHead>
+                <TableHead className="relative overflow-visible" style={{ width: widths.name }}>
                   <button onClick={() => handleSort('name')} className={thButton}>
                     Name <SortIcon column="name" activeSort={sortKey} activeDir={sortDir} />
                   </button>
+                  <ResizeHandle col="name" onMouseDown={onMouseDown} />
                 </TableHead>
-                <TableHead>
+                <TableHead className="relative overflow-visible" style={{ width: widths.price }}>
                   <button onClick={() => handleSort('price')} className={thButton}>
                     Price <SortIcon column="price" activeSort={sortKey} activeDir={sortDir} />
                   </button>
+                  <ResizeHandle col="price" onMouseDown={onMouseDown} />
                 </TableHead>
-                <TableHead>Unit</TableHead>
-                <TableHead className="text-center">Qty</TableHead>
-                <TableHead>
+                <TableHead className="relative overflow-visible" style={{ width: widths.unit }}>
+                  Unit
+                  <ResizeHandle col="unit" onMouseDown={onMouseDown} />
+                </TableHead>
+                <TableHead className="relative overflow-visible text-center" style={{ width: widths.qty }}>
+                  Qty
+                  <ResizeHandle col="qty" onMouseDown={onMouseDown} />
+                </TableHead>
+                <TableHead className="relative overflow-visible" style={{ width: widths.category }}>
                   <button onClick={() => handleSort('category')} className={thButton}>
                     Category <SortIcon column="category" activeSort={sortKey} activeDir={sortDir} />
                   </button>
+                  <ResizeHandle col="category" onMouseDown={onMouseDown} />
                 </TableHead>
-                <TableHead className="text-center">
+                <TableHead className="relative overflow-visible text-center" style={{ width: widths.status }}>
                   <button onClick={() => handleSort('status')} className={cn(thButton, 'justify-center w-full')}>
                     Status <SortIcon column="status" activeSort={sortKey} activeDir={sortDir} />
                   </button>
+                  <ResizeHandle col="status" onMouseDown={onMouseDown} />
                 </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right" style={{ width: widths.actions }}>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -474,7 +509,7 @@ export function VendorProductsClient({
                     activeSelected.has(product.id) && 'bg-muted/50'
                   )}
                 >
-                  <TableCell>
+                  <TableCell style={{ width: widths.checkbox }}>
                     <input
                       type="checkbox"
                       checked={selected.has(product.id)}
@@ -482,7 +517,7 @@ export function VendorProductsClient({
                       className="rounded border-gray-300"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell style={{ width: widths.image }}>
                     {product.imageUrl ? (
                       <img
                         src={product.imageUrl}
@@ -493,15 +528,15 @@ export function VendorProductsClient({
                       <div className="h-8 w-8 rounded bg-muted" />
                     )}
                   </TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell className="font-mono">
+                  <TableCell className="font-medium truncate" style={{ width: widths.name }}>{product.name}</TableCell>
+                  <TableCell className="font-mono" style={{ width: widths.price }}>
                     {formatPrice(product.price)}
                   </TableCell>
-                  <TableCell>{product.unit}</TableCell>
-                  <TableCell className="text-center font-mono text-sm">
+                  <TableCell style={{ width: widths.unit }}>{product.unit}</TableCell>
+                  <TableCell className="text-center font-mono text-sm" style={{ width: widths.qty }}>
                     {product.quantity}
                   </TableCell>
-                  <TableCell>
+                  <TableCell style={{ width: widths.category }}>
                     <span
                       className={cn(
                         'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
@@ -511,7 +546,7 @@ export function VendorProductsClient({
                       {categoryLabel(product.category)}
                     </span>
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center" style={{ width: widths.status }}>
                     <span className="inline-flex items-center gap-1.5 text-xs">
                       <span
                         className={cn(
@@ -522,7 +557,7 @@ export function VendorProductsClient({
                       {statusLabel(product)}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right" style={{ width: widths.actions }}>
                     <div className="flex items-center justify-end gap-1">
                       <Button
                         variant="ghost"

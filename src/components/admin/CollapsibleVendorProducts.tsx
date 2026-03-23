@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useResizableColumns } from '@/hooks/useResizableColumns'
 import ProductRowActions from './ProductRowActions'
 
 type ProductData = {
@@ -31,6 +32,15 @@ type VendorGroup = {
 
 type SortKey = 'name' | 'price' | 'category' | 'vendor' | 'status'
 type SortDir = 'asc' | 'desc'
+
+const ADMIN_COLS = {
+  name: 200,
+  price: 90,
+  unit: 80,
+  category: 140,
+  status: 120,
+  actions: 80,
+}
 
 function statusLabel(p: ProductData) {
   if (p.isComingSoon) return 'Coming Soon'
@@ -53,10 +63,22 @@ function SortIcon({ column, activeSort, activeDir }: { column: SortKey; activeSo
     : <ArrowDown className="ml-1 inline h-3 w-3 text-foreground" />
 }
 
+function ResizeHandle({ col, onMouseDown }: { col: string; onMouseDown: (col: string, e: React.MouseEvent) => void }) {
+  return (
+    <div
+      onMouseDown={(e) => onMouseDown(col, e)}
+      className="absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize group hover:bg-primary/20 active:bg-primary/40"
+    >
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 h-4 w-px bg-border group-hover:bg-primary/60" />
+    </div>
+  )
+}
+
 export default function CollapsibleVendorProducts({ groups }: { groups: VendorGroup[] }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
   const [sortKey, setSortKey] = useState<SortKey | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const { widths, onMouseDown } = useResizableColumns(ADMIN_COLS)
 
   const toggle = (vendorId: string) => {
     setExpanded((prev) => ({ ...prev, [vendorId]: !prev[vendorId] }))
@@ -80,7 +102,6 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
   }
 
   const sortedGroups = useMemo(() => {
-    // Sort vendor groups
     const sorted = [...groups].sort((a, b) => {
       if (sortKey === 'vendor') {
         const cmp = a.vendorName.localeCompare(b.vendorName)
@@ -89,7 +110,6 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
       return a.vendorName.localeCompare(b.vendorName)
     })
 
-    // Sort products within each group
     if (sortKey && sortKey !== 'vendor') {
       return sorted.map((g) => ({
         ...g,
@@ -190,40 +210,47 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
 
             {isOpen && (
               <div className="overflow-x-auto border-t">
-                <Table>
+                <Table className="table-fixed">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>
+                      <TableHead className="relative overflow-visible" style={{ width: widths.name }}>
                         <button onClick={() => handleSort('name')} className={thButton}>
                           Name <SortIcon column="name" activeSort={sortKey} activeDir={sortDir} />
                         </button>
+                        <ResizeHandle col="name" onMouseDown={onMouseDown} />
                       </TableHead>
-                      <TableHead>
+                      <TableHead className="relative overflow-visible" style={{ width: widths.price }}>
                         <button onClick={() => handleSort('price')} className={thButton}>
                           Price <SortIcon column="price" activeSort={sortKey} activeDir={sortDir} />
                         </button>
+                        <ResizeHandle col="price" onMouseDown={onMouseDown} />
                       </TableHead>
-                      <TableHead>Unit</TableHead>
-                      <TableHead>
+                      <TableHead className="relative overflow-visible" style={{ width: widths.unit }}>
+                        Unit
+                        <ResizeHandle col="unit" onMouseDown={onMouseDown} />
+                      </TableHead>
+                      <TableHead className="relative overflow-visible" style={{ width: widths.category }}>
                         <button onClick={() => handleSort('category')} className={thButton}>
                           Category <SortIcon column="category" activeSort={sortKey} activeDir={sortDir} />
                         </button>
+                        <ResizeHandle col="category" onMouseDown={onMouseDown} />
                       </TableHead>
-                      <TableHead className="text-center">
+                      <TableHead className="relative overflow-visible text-center" style={{ width: widths.status }}>
                         <button onClick={() => handleSort('status')} className={cn(thButton, 'justify-center w-full')}>
                           Status <SortIcon column="status" activeSort={sortKey} activeDir={sortDir} />
                         </button>
+                        <ResizeHandle col="status" onMouseDown={onMouseDown} />
                       </TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="text-right" style={{ width: widths.actions }}>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {group.products.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{formatPrice(product.price)}</TableCell>
-                        <TableCell className="text-muted-foreground">{product.unit}</TableCell>
-                        <TableCell>
+                        <TableCell className="font-medium truncate" style={{ width: widths.name }}>{product.name}</TableCell>
+                        <TableCell style={{ width: widths.price }}>{formatPrice(product.price)}</TableCell>
+                        <TableCell className="text-muted-foreground" style={{ width: widths.unit }}>{product.unit}</TableCell>
+                        <TableCell style={{ width: widths.category }}>
                           <span
                             className={cn(
                               'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
@@ -233,7 +260,7 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
                             {categoryLabel(product.category)}
                           </span>
                         </TableCell>
-                        <TableCell className="text-center">
+                        <TableCell className="text-center" style={{ width: widths.status }}>
                           <span className="inline-flex items-center gap-1.5 text-xs">
                             <span
                               className={cn(
@@ -244,7 +271,7 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
                             {statusLabel(product)}
                           </span>
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right" style={{ width: widths.actions }}>
                           <ProductRowActions
                             productId={product.id}
                             productName={product.name}
