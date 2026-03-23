@@ -29,7 +29,7 @@ type VendorGroup = {
   products: ProductData[]
 }
 
-type SortKey = 'name' | 'price' | 'category' | 'vendor'
+type SortKey = 'name' | 'price' | 'category' | 'vendor' | 'status'
 type SortDir = 'asc' | 'desc'
 
 function statusLabel(p: ProductData) {
@@ -101,6 +101,9 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
             cmp = a.price - b.price
           } else if (sortKey === 'category') {
             cmp = categoryLabel(a.category).localeCompare(categoryLabel(b.category))
+          } else if (sortKey === 'status') {
+            const rank = (p: ProductData) => p.isAvailable ? 0 : p.isComingSoon ? 1 : 2
+            cmp = rank(a) - rank(b)
           }
           return sortDir === 'asc' ? cmp : -cmp
         }),
@@ -117,7 +120,9 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-xs font-medium text-muted-foreground">Sort by:</span>
-          {(['vendor', 'name', 'price', 'category'] as SortKey[]).map((key) => (
+          {(['vendor', 'name', 'price', 'category', 'status'] as SortKey[]).map((key) => {
+            const labels: Record<SortKey, string> = { vendor: 'Vendor', name: 'Name', price: 'Price', category: 'Category', status: 'Status' }
+            return (
             <button
               key={key}
               onClick={() => handleSort(key)}
@@ -128,12 +133,13 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
                   : 'bg-market-warm text-market-soil hover:bg-market-stone/30'
               )}
             >
-              {key === 'vendor' ? 'Vendor' : key === 'name' ? 'Name' : key === 'price' ? 'Price' : 'Category'}
+              {labels[key]}
               {sortKey === key && (
                 sortDir === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
               )}
             </button>
-          ))}
+            )
+          })}
           {sortKey && (
             <button
               onClick={() => { setSortKey(null); setSortDir('asc') }}
@@ -203,7 +209,11 @@ export default function CollapsibleVendorProducts({ groups }: { groups: VendorGr
                           Category <SortIcon column="category" activeSort={sortKey} activeDir={sortDir} />
                         </button>
                       </TableHead>
-                      <TableHead className="text-center">Status</TableHead>
+                      <TableHead className="text-center">
+                        <button onClick={() => handleSort('status')} className={cn(thButton, 'justify-center w-full')}>
+                          Status <SortIcon column="status" activeSort={sortKey} activeDir={sortDir} />
+                        </button>
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
