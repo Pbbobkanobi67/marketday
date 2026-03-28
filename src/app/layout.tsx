@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, DM_Sans, DM_Mono } from 'next/font/google'
 import { CartProvider } from '@/context/CartContext'
 import { Toaster } from 'sonner'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { MARKET_CONFIG } from '@/config/market.config'
 
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Toaster position="bottom-right" richColors />
         </CartProvider>
+        <Analytics />
       </body>
     </html>
   )
